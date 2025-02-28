@@ -160,11 +160,14 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Ativos</CardTitle>
-      </CardHeader>
-      <CardContent>
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
+        <p className="text-sm">
+          Total de ativos:{" "}
+          <span className="font-bold">{currentAssets.length}</span>
+        </p>
+      </CardHeader>
+      <CardContent>
         {Object.entries(assetsByClass).map(([classId, classAssets]) => (
           <div key={classId} className="mb-6">
             <h3 className="text-lg font-medium mb-2">
@@ -179,63 +182,125 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                   )}`}
                 >
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        value={asset.ticker}
-                        onChange={(e) =>
-                          handleUpdateAsset(asset.id, "ticker", e.target.value)
-                        }
-                        className="w-24"
-                        placeholder="Ticker"
-                      />
-                      <Input
-                        type="number"
-                        value={asset.quantity}
-                        onChange={(e) =>
-                          handleUpdateAsset(
-                            asset.id,
-                            "quantity",
-                            e.target.value
-                          )
-                        }
-                        className="w-24"
-                        placeholder="Qtd"
-                      />
-                      <select
-                        value={asset.classId}
-                        onChange={(e) =>
-                          handleUpdateAsset(asset.id, "classId", e.target.value)
-                        }
-                        className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
-                      >
-                        <option value="">Selecione uma classe</option>
-                        {assetClasses.map((cls) => (
-                          <option key={cls.id} value={cls.id}>
-                            {cls.name}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="flex-1 flex items-center justify-end space-x-2">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex flex-col space-y-1">
+                        <Label
+                          htmlFor={`ticker-${asset.id}`}
+                          className="text-xs"
+                        >
+                          Ticker
+                        </Label>
                         <Input
-                          type="number"
-                          value={asset.score}
+                          id={`ticker-${asset.id}`}
+                          value={asset.ticker}
                           onChange={(e) =>
-                            handleUpdateAsset(asset.id, "score", e.target.value)
+                            handleUpdateAsset(
+                              asset.id,
+                              "ticker",
+                              e.target.value
+                            )
                           }
-                          className="w-20"
-                          placeholder="Nota"
-                          min="1"
-                          max="10"
+                          className="w-24"
+                          placeholder="Ticker"
                         />
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm">R$</span>
+                      </div>
+
+                      <div className="flex flex-col space-y-1">
+                        <Label
+                          htmlFor={`quantity-${asset.id}`}
+                          className="text-xs"
+                        >
+                          Quantidade
+                        </Label>
+                        <Input
+                          id={`quantity-${asset.id}`}
+                          type="number"
+                          value={asset.quantity}
+                          onChange={(e) =>
+                            handleUpdateAsset(
+                              asset.id,
+                              "quantity",
+                              e.target.value
+                            )
+                          }
+                          className="w-24"
+                          placeholder="Qtd"
+                        />
+                      </div>
+
+                      <div className="flex flex-col space-y-1">
+                        <Label
+                          htmlFor={`class-${asset.id}`}
+                          className="text-xs"
+                        >
+                          Classe
+                        </Label>
+                        <select
+                          id={`class-${asset.id}`}
+                          value={asset.classId}
+                          onChange={(e) =>
+                            handleUpdateAsset(
+                              asset.id,
+                              "classId",
+                              e.target.value
+                            )
+                          }
+                          className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        >
+                          <option value="">Selecione uma classe</option>
+                          {assetClasses.map((cls) => (
+                            <option key={cls.id} value={cls.id}>
+                              {cls.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex-1 flex items-end justify-end space-x-4">
+                        <div className="flex flex-col space-y-1">
+                          <Label
+                            htmlFor={`score-${asset.id}`}
+                            className="text-xs"
+                          >
+                            Nota (1-10)
+                          </Label>
                           <Input
+                            id={`score-${asset.id}`}
+                            type="number"
+                            value={asset.score}
+                            onChange={(e) =>
+                              handleUpdateAsset(
+                                asset.id,
+                                "score",
+                                e.target.value
+                              )
+                            }
+                            className="w-20"
+                            placeholder="Nota"
+                            min="1"
+                            max="10"
+                          />
+                        </div>
+
+                        <div className="flex flex-col space-y-1">
+                          <Label
+                            htmlFor={`price-${asset.id}`}
+                            className="text-xs"
+                          >
+                            Preço (R$)
+                          </Label>
+                          <Input
+                            id={`price-${asset.id}`}
                             type="number"
                             value={asset.price}
                             onChange={(e) => {
                               const newPrice = parseFloat(e.target.value);
                               if (!isNaN(newPrice) && newPrice > 0) {
-                                handleUpdateAsset(asset.id, "price", e.target.value);
+                                handleUpdateAsset(
+                                  asset.id,
+                                  "price",
+                                  e.target.value
+                                );
                               }
                             }}
                             className="w-24"
@@ -248,6 +313,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                           variant="destructive"
                           size="sm"
                           onClick={() => handleRemoveAsset(asset.id)}
+                          className="mt-6"
                         >
                           Remover
                         </Button>

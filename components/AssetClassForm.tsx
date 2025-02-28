@@ -94,28 +94,24 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Classes de Ativos</CardTitle>
-      </CardHeader>
-      <CardContent>
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <div className="mb-4">
-          <p className="text-sm mb-2">
-            Total alocado:{" "}
-            <span
-              className={
-                totalPercentage > 100 ? "text-red-500 font-bold" : "font-bold"
-              }
-            >
-              {totalPercentage}%
-            </span>
-            {totalPercentage > 100 && " (excede 100%)"}
-            {totalPercentage < 100 &&
-              totalPercentage > 0 &&
-              ` (falta ${100 - totalPercentage}%)`}
-          </p>
-        </div>
-
+        <p className="text-sm">
+          Total alocado:{" "}
+          <span
+            className={
+              totalPercentage > 100 ? "text-red-500 font-bold" : "font-bold"
+            }
+          >
+            {totalPercentage}%
+          </span>
+          {totalPercentage > 100 && " (excede 100%)"}
+          {totalPercentage < 100 &&
+            totalPercentage > 0 &&
+            ` (falta ${100 - totalPercentage}%)`}
+        </p>
+      </CardHeader>
+      <CardContent>
         <div className="space-y-4 mb-6">
           {classes.map((cls) => (
             <div

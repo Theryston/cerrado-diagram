@@ -87,29 +87,33 @@ export default function Home() {
 
           // Set completed steps based on data
           const updatedSteps = { ...completedSteps };
+          let currentStep = STEPS.ASSET_CLASSES;
 
           if (assetClassesFromStorage.length > 0) {
             updatedSteps[STEPS.ASSET_CLASSES] = true;
+
             if (currentStep === STEPS.ASSET_CLASSES) {
-              setCurrentStep(STEPS.ASSETS);
+              currentStep = STEPS.ASSETS;
             }
           }
 
           if (assetsFromStorage.length > 0) {
             updatedSteps[STEPS.ASSETS] = true;
             if (currentStep === STEPS.ASSETS) {
-              setCurrentStep(STEPS.CONTRIBUTION);
+              currentStep = STEPS.CONTRIBUTION;
             }
           }
 
           if (data.contributionAmount > 0) {
             updatedSteps[STEPS.CONTRIBUTION] = true;
+
             if (currentStep === STEPS.CONTRIBUTION) {
-              setCurrentStep(STEPS.RESULTS);
+              currentStep = STEPS.RESULTS;
             }
           }
 
           setCompletedSteps(updatedSteps);
+          setCurrentStep(currentStep);
         }
       }
     } catch (error) {
@@ -289,6 +293,8 @@ export default function Home() {
     {
       id: STEPS.ASSET_CLASSES,
       title: "1. Classes de Ativos",
+      description:
+        "Defina as classes de ativos que deseja incluir no seu diagrama e o percentual para cada classe.",
       isComplete: completedSteps[STEPS.ASSET_CLASSES],
       content: (
         <AssetClassForm
@@ -300,6 +306,8 @@ export default function Home() {
     {
       id: STEPS.ASSETS,
       title: "2. Ativos",
+      description:
+        "Defina os ativos que você deseja incluir no seu diagrama e a quantidade que você tem de cada ativo. (OBS: Se você não tem um ativo, você pode inserir o valor 0)",
       isComplete: completedSteps[STEPS.ASSETS],
       content: (
         <div ref={assetsStepRef}>
@@ -314,6 +322,8 @@ export default function Home() {
     {
       id: STEPS.CONTRIBUTION,
       title: "3. Aporte",
+      description:
+        "Defina o valor que você deseja investir, e o diagrama calculará a quantidade de cada ativo para você.",
       isComplete: completedSteps[STEPS.CONTRIBUTION],
       content: (
         <ContributionForm
