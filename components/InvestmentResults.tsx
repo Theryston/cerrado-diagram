@@ -46,6 +46,16 @@ export function InvestmentResults({
   };
 
   const handleSaveActual = () => {
+    // Validate if all actual investments are valid (not negative)
+    const hasInvalidValues = actualInvestments.some(
+      inv => inv.actual !== null && inv.actual < 0
+    );
+    
+    if (hasInvalidValues) {
+      alert('Por favor, corrija os valores negativos antes de salvar.');
+      return;
+    }
+    
     onSaveActual(actualInvestments);
   };
 
@@ -115,8 +125,13 @@ export function InvestmentResults({
             })}
             
             <div className="flex space-x-4 mt-6">
-              <Button onClick={handleSaveActual}>Salvar Aportes Reais</Button>
+              <Button onClick={handleSaveActual} className="bg-green-600 hover:bg-green-700">
+                Salvar Aportes Reais
+              </Button>
               <Button variant="outline" onClick={onReset}>Novo Cálculo</Button>
+            </div>
+            <div className="mt-3 text-sm text-gray-600">
+              Após salvar, as quantidades dos ativos serão atualizadas com base nos valores reais.
             </div>
           </>
         )}

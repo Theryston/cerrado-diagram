@@ -141,16 +141,30 @@ export default function Home() {
     // Update assets with new quantities based on actual investments
     const updatedAssets = [...assets];
     
-    actualInvestments.forEach(inv => {
-      if (inv.actual !== null && inv.actual > 0) {
-        const assetIndex = updatedAssets.findIndex(a => a.id === inv.assetId);
+    // Compare with previous investments to find only new contributions
+    actualInvestments.forEach(newInv => {
+      // Find the current investment to compare
+      const currentInv = investments.find(inv => inv.assetId === newInv.assetId);
+      
+      // Only process if there's an actual value and it's different from before
+      if (newInv.actual !== null && newInv.actual > 0 && 
+          (currentInv?.actual === null || currentInv?.actual !== newInv.actual)) {
+        
+        const assetIndex = updatedAssets.findIndex(a => a.id === newInv.assetId);
         if (assetIndex !== -1) {
           const asset = updatedAssets[assetIndex];
-          const additionalUnits = Math.floor(inv.actual / asset.price);
-          updatedAssets[assetIndex] = {
-            ...asset,
-            quantity: asset.quantity + additionalUnits
-          };
+          
+          // Calculate how many new units to add based on difference
+          const previousAmount = currentInv?.actual || 0;
+          const additionalAmount = newInv.actual - previousAmount;
+          const additionalUnits = Math.floor(additionalAmount / asset.price);
+          
+          if (additionalUnits > 0) {
+            updatedAssets[assetIndex] = {
+              ...asset,
+              quantity: asset.quantity + additionalUnits
+            };
+          }
         }
       }
     });
@@ -159,6 +173,9 @@ export default function Home() {
     updateAssets(updatedAssets);
     setInvestments(actualInvestments);
     updateInvestments(actualInvestments);
+    
+    // Mark the results step as completed
+    setCompletedSteps(prev => ({ ...prev, [STEPS.RESULTS]: true }));
   };
 
   // Reset for new calculation

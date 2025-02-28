@@ -14,7 +14,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   const [classes, setClasses] = useState<AssetClass[]>(assetClasses);
   const [name, setName] = useState('');
   const [percentage, setPercentage] = useState('');
-  const [score, setScore] = useState('');
   const [error, setError] = useState('');
 
   // Calculate total percentage
@@ -33,12 +32,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
       return;
     }
 
-    const parsedScore = parseInt(score);
-    if (isNaN(parsedScore) || parsedScore <= 0) {
-      setError('Nota precisa ser um número inteiro positivo');
-      return;
-    }
-
     // Check if total percentage would exceed 100%
     if (totalPercentage + parsedPercentage > 100) {
       setError('Total de percentuais não pode exceder 100%');
@@ -49,8 +42,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
     const newClass: AssetClass = {
       id: Date.now().toString(),
       name: name.trim(),
-      percentage: parsedPercentage,
-      score: parsedScore
+      percentage: parsedPercentage
     };
 
     const updatedClasses = [...classes, newClass];
@@ -59,7 +51,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
     // Clear inputs
     setName('');
     setPercentage('');
-    setScore('');
     setError('');
 
     // Save to parent component
@@ -81,11 +72,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
           const parsedValue = parseFloat(value);
           if (!isNaN(parsedValue)) {
             return { ...cls, percentage: parsedValue };
-          }
-        } else if (field === 'score') {
-          const parsedValue = parseInt(value);
-          if (!isNaN(parsedValue)) {
-            return { ...cls, score: parsedValue };
           }
         }
       }
@@ -132,13 +118,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
                     className="w-20"
                     placeholder="%"
                   />
-                  <Input
-                    type="number"
-                    value={cls.score}
-                    onChange={(e) => handleUpdateClass(cls.id, 'score', e.target.value)}
-                    className="w-20"
-                    placeholder="Nota"
-                  />
                   <Button
                     variant="destructive"
                     size="sm"
@@ -174,16 +153,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
             />
           </div>
           
-          <div>
-            <Label htmlFor="score">Nota (1-10)</Label>
-            <Input
-              id="score"
-              type="number"
-              value={score}
-              onChange={(e) => setScore(e.target.value)}
-              placeholder="Ex: 8"
-            />
-          </div>
           
           <Button onClick={handleAddClass}>Adicionar Classe</Button>
         </div>

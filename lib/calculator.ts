@@ -6,9 +6,10 @@ export function calculateInvestmentDistribution(
   currentTotal: number,
   contributionAmount: number
 ): Investment[] {
-  // Calculate the total score for each asset class
-  const classScores = assetClasses.reduce<Record<string, number>>((acc, assetClass) => {
-    acc[assetClass.id] = assetClass.score;
+  // Calculate the total score for each asset class based on all assets in the class
+  const classScores = assets.reduce<Record<string, number>>((acc, asset) => {
+    const classId = asset.classId;
+    acc[classId] = (acc[classId] || 0) + asset.score;
     return acc;
   }, {});
 
