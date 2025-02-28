@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const api = axios.create({
   baseURL: "https://brapi.dev/api",
@@ -26,9 +27,12 @@ export const fetchAssetPrice = async (ticker: string) => {
     throw new Error("Asset not found");
   } catch (error) {
     console.error("Error fetching asset price:", error);
+    toast.error(
+      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`
+    );
     // Fallback for testing/development
     return {
-      price: Math.random() * 100 + 10,
+      price: 0,
       minInvestment: getMinInvestment(ticker),
     };
   }

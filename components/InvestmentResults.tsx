@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Investment, Asset, AssetClass } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,11 @@ export function InvestmentResults({
   onReset
 }: InvestmentResultsProps) {
   const [actualInvestments, setActualInvestments] = useState<Investment[]>(investments);
+  
+  // Update local state when props change
+  useEffect(() => {
+    setActualInvestments(investments);
+  }, [investments]);
 
   const getAsset = (assetId: string) => {
     return assets.find(asset => asset.id === assetId);

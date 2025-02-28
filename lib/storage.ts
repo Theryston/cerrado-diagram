@@ -6,11 +6,20 @@ const STORAGE_KEY = 'cerrado-diagram-data';
 export function getStoredData(): CerradoDiagram | null {
   if (typeof window === 'undefined') return null;
   
-  const storedData = localStorage.getItem(STORAGE_KEY);
-  if (!storedData) return null;
-  
   try {
-    return JSON.parse(storedData) as CerradoDiagram;
+    const storedData = localStorage.getItem(STORAGE_KEY);
+    if (!storedData) return null;
+    
+    const parsedData = JSON.parse(storedData) as CerradoDiagram;
+    
+    // Ensure all properties exist with proper defaults
+    return {
+      assetClasses: Array.isArray(parsedData.assetClasses) ? parsedData.assetClasses : [],
+      assets: Array.isArray(parsedData.assets) ? parsedData.assets : [],
+      investments: Array.isArray(parsedData.investments) ? parsedData.investments : [],
+      totalInvestment: typeof parsedData.totalInvestment === 'number' ? parsedData.totalInvestment : 0,
+      contributionAmount: typeof parsedData.contributionAmount === 'number' ? parsedData.contributionAmount : 0,
+    };
   } catch (error) {
     console.error('Error parsing stored data:', error);
     return null;
@@ -20,7 +29,22 @@ export function getStoredData(): CerradoDiagram | null {
 // Save data to localStorage
 export function saveData(data: CerradoDiagram): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  
+  try {
+    // Ensure all required properties exist
+    const sanitizedData: CerradoDiagram = {
+      assetClasses: Array.isArray(data.assetClasses) ? data.assetClasses : [],
+      assets: Array.isArray(data.assets) ? data.assets : [],
+      investments: Array.isArray(data.investments) ? data.investments : [],
+      totalInvestment: typeof data.totalInvestment === 'number' ? data.totalInvestment : 0,
+      contributionAmount: typeof data.contributionAmount === 'number' ? data.contributionAmount : 0,
+    };
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizedData));
+    console.log("Data saved to localStorage:", sanitizedData);
+  } catch (error) {
+    console.error("Error saving data to localStorage:", error);
+  }
 }
 
 // Initialize or get stored data

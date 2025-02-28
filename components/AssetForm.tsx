@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Asset, AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,11 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
   const [score, setScore] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Update currentAssets when assets props changes
+  useEffect(() => {
+    setCurrentAssets(assets);
+  }, [assets]);
 
   const handleAddAsset = async () => {
     // Validate inputs
@@ -109,6 +114,16 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
           if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
             return { ...asset, score: parsedValue };
           }
+        } else if (field === "price") {
+          const parsedValue = parseFloat(value);
+          if (!isNaN(parsedValue) && parsedValue > 0) {
+            return { ...asset, price: parsedValue };
+          }
+        } else if (field === "minInvestment") {
+          const parsedValue = parseFloat(value);
+          if (!isNaN(parsedValue) && parsedValue >= 0) {
+            return { ...asset, minInvestment: parsedValue };
+          }
         }
       }
       return asset;
@@ -193,6 +208,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                         }
                         className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
                       >
+                        <option value="">Selecione uma classe</option>
                         {assetClasses.map((cls) => (
                           <option key={cls.id} value={cls.id}>
                             {cls.name}
@@ -211,9 +227,23 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                           min="1"
                           max="10"
                         />
-                        <span className="text-sm">
-                          R$ {asset.price.toFixed(2)}
-                        </span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm">R$</span>
+                          <Input
+                            type="number"
+                            value={asset.price}
+                            onChange={(e) => {
+                              const newPrice = parseFloat(e.target.value);
+                              if (!isNaN(newPrice) && newPrice > 0) {
+                                handleUpdateAsset(asset.id, "price", e.target.value);
+                              }
+                            }}
+                            className="w-24"
+                            step="0.01"
+                            min="0.01"
+                            placeholder="Preço"
+                          />
+                        </div>
                         <Button
                           variant="destructive"
                           size="sm"
