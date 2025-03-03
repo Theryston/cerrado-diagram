@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface AssetClassFormProps {
   assetClasses: AssetClass[];
@@ -15,17 +16,15 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   const [name, setName] = useState("");
   const [percentage, setPercentage] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
-  // Update classes when assetClasses props changes
   useEffect(() => {
     setClasses(assetClasses);
   }, [assetClasses]);
 
-  // Calculate total percentage
   const totalPercentage = classes.reduce((sum, cls) => sum + cls.percentage, 0);
 
   const handleAddClass = () => {
-    // Validate inputs
     if (!name.trim()) {
       setError("Nome da classe de ativos é obrigatório");
       return;
@@ -37,13 +36,11 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
       return;
     }
 
-    // Check if total percentage would exceed 100%
     if (totalPercentage + parsedPercentage > 100) {
       setError("Total de percentuais não pode exceder 100%");
       return;
     }
 
-    // Add new asset class
     const newClass: AssetClass = {
       id: Date.now().toString(),
       name: name.trim(),
@@ -53,12 +50,10 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
     const updatedClasses = [...classes, newClass];
     setClasses(updatedClasses);
 
-    // Clear inputs
     setName("");
     setPercentage("");
     setError("");
 
-    // Save to parent component
     onSave(updatedClasses);
   };
 
@@ -71,7 +66,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   const handleUpdateClass = (
     id: string,
     field: keyof AssetClass,
-    value: string,
+    value: string
   ) => {
     const updatedClasses = classes.map((cls) => {
       if (cls.id === id) {
@@ -114,39 +109,60 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
       <CardContent>
         <div className="space-y-4 mb-6">
           {classes.map((cls) => (
-            <div
-              key={cls.id}
-              className="flex items-center space-x-2 p-3 border rounded-md"
-            >
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center space-x-2">
-                  <Input
-                    value={cls.name}
-                    onChange={(e) =>
-                      handleUpdateClass(cls.id, "name", e.target.value)
-                    }
-                    className="flex-grow"
-                    placeholder="Nome da classe"
-                  />
-                  <Input
-                    type="number"
-                    value={cls.percentage}
-                    onChange={(e) =>
-                      handleUpdateClass(cls.id, "percentage", e.target.value)
-                    }
-                    className="w-20"
-                    placeholder="%"
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleRemoveClass(cls.id)}
-                  >
-                    Remover
-                  </Button>
+            <Fragment key={cls.id}>
+              <div className="flex items-center space-x-2">
+                <div className="flex-1 space-y-1">
+                  <div className="grid grid-cols-1 lg:grid-cols-[1fr_100px] gap-x-6 gap-y-4 items-center">
+                    <div className="flex flex-col space-y-1">
+                      <Label htmlFor={`name-${cls.id}`}>Nome</Label>
+                      <Input
+                        id={`name-${cls.id}`}
+                        value={cls.name}
+                        onChange={(e) =>
+                          handleUpdateClass(cls.id, "name", e.target.value)
+                        }
+                        className="w-full"
+                        placeholder="Nome da classe"
+                      />
+                    </div>
+
+                    <div className="flex flex-col space-y-1">
+                      <Label htmlFor={`percentage-${cls.id}`}>
+                        Percentual (%)
+                      </Label>
+                      <Input
+                        id={`percentage-${cls.id}`}
+                        type="number"
+                        value={cls.percentage}
+                        onChange={(e) =>
+                          handleUpdateClass(
+                            cls.id,
+                            "percentage",
+                            e.target.value
+                          )
+                        }
+                        className="w-full"
+                        placeholder="%"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-start mt-4">
+                    <Button
+                      id={`remove-${cls.id}`}
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleRemoveClass(cls.id)}
+                      className="w-28"
+                    >
+                      Remover
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+
+              <hr className="w-full border-t border-gray-300" />
+            </Fragment>
           ))}
         </div>
 
@@ -172,7 +188,21 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
             />
           </div>
 
-          <Button onClick={handleAddClass}>Adicionar Classe</Button>
+          <div className="flex gap-2">
+            <Button onClick={handleAddClass} className="w-full max-w-48">
+              Adicionar Classe
+            </Button>
+
+            {classes.length > 0 && (
+              <Button
+                variant="outline"
+                className="w-full max-w-48"
+                onClick={() => router.push("#assets")}
+              >
+                Próximo
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

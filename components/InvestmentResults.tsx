@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Investment, Asset, AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface InvestmentResultsProps {
   investments: Investment[];
   assets: Asset[];
   assetClasses: AssetClass[];
-  onSaveActual: (investments: Investment[]) => void;
   onReset: () => void;
 }
 
@@ -16,7 +14,6 @@ export function InvestmentResults({
   investments,
   assets,
   assetClasses,
-  onSaveActual,
   onReset,
 }: InvestmentResultsProps) {
   const [actualInvestments, setActualInvestments] =
@@ -33,37 +30,6 @@ export function InvestmentResults({
 
   const getAssetClass = (classId: string) => {
     return assetClasses.find((cls) => cls.id === classId);
-  };
-
-  const handleActualChange = (id: string, value: string) => {
-    const parsedValue = parseFloat(value);
-
-    const updatedInvestments = actualInvestments.map((inv) => {
-      if (inv.assetId === id) {
-        return {
-          ...inv,
-          actual: !isNaN(parsedValue) ? parsedValue : null,
-        };
-      }
-
-      return inv;
-    });
-
-    setActualInvestments(updatedInvestments);
-  };
-
-  const handleSaveActual = () => {
-    // Validate if all actual investments are valid (not negative)
-    const hasInvalidValues = actualInvestments.some(
-      (inv) => inv.actual !== null && inv.actual < 0
-    );
-
-    if (hasInvalidValues) {
-      alert("Por favor, corrija os valores negativos antes de salvar.");
-      return;
-    }
-
-    onSaveActual(actualInvestments);
   };
 
   // Group investments by asset class
@@ -85,17 +51,14 @@ export function InvestmentResults({
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Resultado do Cálculo</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="mt-6">
         {!hasInvestments ? (
           <p>
             Nenhum investimento sugerido. Verifique seus ativos e tente
             novamente.
           </p>
         ) : (
-          <>
+          <div className="space-y-4">
             {Object.entries(investmentsByClass).map(
               ([classId, investments]) => {
                 const assetClass = getAssetClass(classId);
@@ -106,7 +69,7 @@ export function InvestmentResults({
                 if (classInvestments.length === 0) return null;
 
                 return (
-                  <div key={classId} className="mb-6">
+                  <div key={classId}>
                     <h3 className="text-lg font-medium mb-2">
                       {assetClass?.name || "Classe Desconhecida"}
                     </h3>
@@ -118,45 +81,39 @@ export function InvestmentResults({
                         return (
                           <div
                             key={inv.assetId}
-                            className="flex items-center space-x-2 p-3 border rounded-md"
+                            className="flex items-center p-3 border rounded-md"
                           >
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-4">
-                                <div className="w-20 font-medium">
-                                  {asset.ticker}
-                                </div>
-                                <div className="flex-1">
-                                  <div className="text-sm">
-                                    Aporte Sugerido: R${" "}
-                                    {inv.suggested.toFixed(2)}
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    ({inv.amount} unidades)
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    Ideal:{" "}
-                                    {(inv.idealPercentage * 100).toFixed(2)}%
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    Novo Percentual:{" "}
-                                    {(inv.newPercentage * 100).toFixed(2)}%
-                                  </div>
-                                </div>
-                                <div className="w-32">
-                                  <Input
-                                    type="number"
-                                    value={
-                                      inv.actual !== null ? inv.actual : ""
-                                    }
-                                    onChange={(e) =>
-                                      handleActualChange(
-                                        inv.assetId,
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="Valor real"
-                                  />
-                                </div>
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+                              <div className="font-bold text-xl mr-4">
+                                {asset.ticker}
+                              </div>
+
+                              <div className="text-sm text-gray-500">
+                                <span className="font-medium text-foreground">
+                                  Aporte Sugerido:
+                                </span>{" "}
+                                R$ {inv.suggested.toFixed(2)}
+                              </div>
+
+                              <div className="text-sm text-gray-500">
+                                <span className="font-medium text-foreground">
+                                  Comprar:
+                                </span>{" "}
+                                {inv.amount} unidades
+                              </div>
+
+                              <div className="text-sm text-gray-500">
+                                <span className="font-medium text-foreground">
+                                  Ideal:
+                                </span>{" "}
+                                {(inv.idealPercentage * 100).toFixed(2)}%
+                              </div>
+
+                              <div className="text-sm text-gray-500">
+                                <span className="font-medium text-foreground">
+                                  Novo Percentual:
+                                </span>{" "}
+                                {(inv.newPercentage * 100).toFixed(2)}%
                               </div>
                             </div>
                           </div>
@@ -168,26 +125,19 @@ export function InvestmentResults({
               }
             )}
 
-            <div className="text-lg font-medium mb-2">
-              Total a investir: R$ {totalInvestment.toFixed(2)}
+            <div className="text-lg text-gray-500">
+              <span className="font-medium text-foreground">
+                Total a investir:
+              </span>{" "}
+              R$ {totalInvestment.toFixed(2)}
             </div>
 
-            <div className="flex space-x-4 mt-6">
-              <Button
-                onClick={handleSaveActual}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Salvar Aportes Reais
-              </Button>
+            <div className="flex gap-2">
               <Button variant="outline" onClick={onReset}>
                 Novo Cálculo
               </Button>
             </div>
-            <div className="mt-3 text-sm text-gray-600">
-              Após salvar, as quantidades dos ativos serão atualizadas com base
-              nos valores reais.
-            </div>
-          </>
+          </div>
         )}
       </CardContent>
     </Card>

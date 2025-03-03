@@ -119,6 +119,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -126,18 +130,6 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-.score-high {
-  @apply bg-primary/10 border-primary;
-}
-
-.score-medium {
-  @apply bg-primary/20 border-primary;
-}
-
-.score-low {
-  @apply bg-muted border-border opacity-60;
 }
 
 .timeline-connector {

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface ContributionFormProps {
   currentAmount: number;
@@ -15,9 +16,9 @@ export function ContributionForm({
 }: ContributionFormProps) {
   const [amount, setAmount] = useState(currentAmount.toString());
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = () => {
-    // Validate input
     const parsedAmount = parseFloat(amount);
 
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
@@ -27,14 +28,13 @@ export function ContributionForm({
 
     setError("");
     onSave(parsedAmount);
+
+    router.push("#results");
   };
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Valor do Aporte</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="mt-6">
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="flex flex-col space-y-4">
@@ -49,7 +49,11 @@ export function ContributionForm({
             />
           </div>
 
-          <Button onClick={handleSubmit}>Calcular Distribuição</Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSubmit} className="w-full max-w-48">
+              Calcular Distribuição
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

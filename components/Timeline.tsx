@@ -58,8 +58,9 @@ export function Timeline({ steps, currentStep }: TimelineProps) {
                     {step.description}
                   </p>
                 )}
-              {/* Only render content if it's complete or active */}
+
               {(step.isComplete || isActive || isPrevious) && step.content}
+
               {isDisabled && (
                 <div className="flex items-center text-gray-500">
                   <CircleSlash size={16} className="mr-2" />
