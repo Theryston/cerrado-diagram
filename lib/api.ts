@@ -1,58 +1,34 @@
-import axios from "axios";
 import toast from "react-hot-toast";
-
-const api = axios.create({
-  baseURL: "https://brapi.dev/api",
-});
 
 export const fetchAssetPrice = async (ticker: string) => {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_BRAPI_API_KEY;
-    const response = await api.get(
-      `/quote/${ticker}?range=1d&interval=1d&fundamental=true&token=${apiKey}`,
-    );
+    const response = await fetch(`/api/quote?ticker=${ticker}`);
 
-    if (
-      response.data &&
-      response.data.results &&
-      response.data.results.length > 0
-    ) {
-      const result = response.data.results[0];
-      return {
-        price: result.regularMarketPrice,
-        minInvestment: getMinInvestment(ticker),
-      };
+    if (!response.ok) {
+      throw new Error("Failed to fetch asset price");
     }
 
-    throw new Error("Asset not found");
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching asset price:", error);
     toast.error(
-      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`,
+      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`
     );
-    // Fallback for testing/development
-    return {
-      price: 0,
-      minInvestment: getMinInvestment(ticker),
-    };
+    return { price: 0, minInvestment: getMinInvestment(ticker) };
   }
 };
 
-// Helper function to determine minimum investment based on ticker pattern
-function getMinInvestment(ticker: string): number {
-  // Remove any stock exchange suffix if present
+export function getMinInvestment(ticker: string): number {
   const cleanTicker = ticker.split(".")[0];
 
-  // FIIs usually end with 11 (e.g., HGLG11, KNRI11)
   if (/\d{2}$/.test(cleanTicker)) {
-    return 1; // 1 unit for FIIs
+    return 1;
   }
 
-  // Treasury bonds usually start with "LFT", "LTN", "NTN", etc.
   if (/^(LFT|LTN|NTN)/.test(cleanTicker)) {
-    return 1; // Minimum fraction for Treasury Direct
+    return 1;
   }
 
-  // Regular stocks (default)
-  return 1; // 1 unit for stocks
+  return 1;
 }
