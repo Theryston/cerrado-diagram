@@ -81,7 +81,7 @@ export function InvestmentResults({
                         return (
                           <div
                             key={inv.assetId}
-                            className="flex items-center p-3 border rounded-md"
+                            className="flex items-center p-3 bg-muted rounded-md"
                           >
                             <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
                               <div className="font-bold text-xl mr-4">

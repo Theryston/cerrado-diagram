@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { Asset, AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -188,150 +188,139 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
             </h3>
             <div className="space-y-4">
               {classAssets.map((asset) => (
-                <Fragment key={asset.id}>
-                  <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`ticker-${asset.id}`} className="text-xs">
-                        Ticker
-                      </Label>
-                      <Input
-                        id={`ticker-${asset.id}`}
-                        value={asset.ticker}
-                        onChange={(e) =>
-                          handleUpdateAsset(asset.id, "ticker", e.target.value)
-                        }
-                        className="w-full"
-                        placeholder="Ticker"
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label
-                        htmlFor={`quantity-${asset.id}`}
-                        className="text-xs"
-                      >
-                        Quantidade
-                      </Label>
-                      <Input
-                        id={`quantity-${asset.id}`}
-                        type="number"
-                        value={asset.quantity}
-                        onChange={(e) =>
-                          handleUpdateAsset(
-                            asset.id,
-                            "quantity",
-                            e.target.value
-                          )
-                        }
-                        className="w-full"
-                        placeholder="Qtd"
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`class-${asset.id}`} className="text-xs">
-                        Classe
-                      </Label>
-                      <select
-                        id={`class-${asset.id}`}
-                        value={asset.classId}
-                        onChange={(e) =>
-                          handleUpdateAsset(asset.id, "classId", e.target.value)
-                        }
-                        className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
-                      >
-                        <option value="">Selecione uma classe</option>
-                        {assetClasses.map((cls) => (
-                          <option key={cls.id} value={cls.id}>
-                            {cls.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`score-${asset.id}`} className="text-xs">
-                        Nota (1-10)
-                      </Label>
-                      <Input
-                        id={`score-${asset.id}`}
-                        type="number"
-                        value={asset.score}
-                        onChange={(e) =>
-                          handleUpdateAsset(asset.id, "score", e.target.value)
-                        }
-                        className="w-full"
-                        placeholder="Nota"
-                        min="1"
-                        max="10"
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`price-${asset.id}`} className="text-xs">
-                        Preço (R$)
-                      </Label>
-                      <Input
-                        id={`price-${asset.id}`}
-                        type="number"
-                        value={asset.price}
-                        onChange={(e) => {
-                          const newPrice = parseFloat(e.target.value);
-                          if (!isNaN(newPrice) && newPrice > 0) {
-                            handleUpdateAsset(
-                              asset.id,
-                              "price",
-                              e.target.value
-                            );
-                          }
-                        }}
-                        className="w-full"
-                        step="0.01"
-                        min="0.01"
-                        placeholder="Preço"
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`idealPercentage-${asset.id}`}>
-                        Percentual ideal
-                      </Label>
-
-                      <Input
-                        id={`idealPercentage-${asset.id}`}
-                        type="text"
-                        value={`${(asset.idealPercentage * 100).toFixed(2)}%`}
-                        disabled
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`actualPercentage-${asset.id}`}>
-                        Percentual atual
-                      </Label>
-
-                      <Input
-                        id={`actualPercentage-${asset.id}`}
-                        type="text"
-                        value={`${(
-                          ((asset.price * asset.quantity) / totalInvestment) *
-                          100
-                        ).toFixed(2)}%`}
-                        disabled
-                      />
-                    </div>
-
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleRemoveAsset(asset.id)}
+                <div
+                  className="grid grid-cols-1 lg:grid-cols-7 gap-4 p-3 bg-muted rounded-md"
+                  key={asset.id}
+                >
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`ticker-${asset.id}`} className="text-xs">
+                      Ticker
+                    </Label>
+                    <Input
+                      id={`ticker-${asset.id}`}
+                      value={asset.ticker}
+                      onChange={(e) =>
+                        handleUpdateAsset(asset.id, "ticker", e.target.value)
+                      }
                       className="w-full"
-                    >
-                      Remover
-                    </Button>
+                      placeholder="Ticker"
+                    />
                   </div>
-                  <hr className="w-full border-t border-gray-300" />
-                </Fragment>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`quantity-${asset.id}`} className="text-xs">
+                      Quantidade
+                    </Label>
+                    <Input
+                      id={`quantity-${asset.id}`}
+                      type="number"
+                      value={asset.quantity}
+                      onChange={(e) =>
+                        handleUpdateAsset(asset.id, "quantity", e.target.value)
+                      }
+                      className="w-full"
+                      placeholder="Qtd"
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`class-${asset.id}`} className="text-xs">
+                      Classe
+                    </Label>
+                    <select
+                      id={`class-${asset.id}`}
+                      value={asset.classId}
+                      onChange={(e) =>
+                        handleUpdateAsset(asset.id, "classId", e.target.value)
+                      }
+                      className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    >
+                      <option value="">Selecione uma classe</option>
+                      {assetClasses.map((cls) => (
+                        <option key={cls.id} value={cls.id}>
+                          {cls.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`score-${asset.id}`} className="text-xs">
+                      Nota (1-10)
+                    </Label>
+                    <Input
+                      id={`score-${asset.id}`}
+                      type="number"
+                      value={asset.score}
+                      onChange={(e) =>
+                        handleUpdateAsset(asset.id, "score", e.target.value)
+                      }
+                      className="w-full"
+                      placeholder="Nota"
+                      min="1"
+                      max="10"
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`price-${asset.id}`} className="text-xs">
+                      Preço (R$)
+                    </Label>
+                    <Input
+                      id={`price-${asset.id}`}
+                      type="number"
+                      value={asset.price}
+                      onChange={(e) => {
+                        const newPrice = parseFloat(e.target.value);
+                        if (!isNaN(newPrice) && newPrice > 0) {
+                          handleUpdateAsset(asset.id, "price", e.target.value);
+                        }
+                      }}
+                      className="w-full"
+                      step="0.01"
+                      min="0.01"
+                      placeholder="Preço"
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`idealPercentage-${asset.id}`}>
+                      Percentual ideal
+                    </Label>
+
+                    <Input
+                      id={`idealPercentage-${asset.id}`}
+                      type="text"
+                      value={`${(asset.idealPercentage * 100).toFixed(2)}%`}
+                      disabled
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`actualPercentage-${asset.id}`}>
+                      Percentual atual
+                    </Label>
+
+                    <Input
+                      id={`actualPercentage-${asset.id}`}
+                      type="text"
+                      value={`${(
+                        ((asset.price * asset.quantity) / totalInvestment) *
+                        100
+                      ).toFixed(2)}%`}
+                      disabled
+                    />
+                  </div>
+
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleRemoveAsset(asset.id)}
+                    className="w-full"
+                  >
+                    Remover
+                  </Button>
+                </div>
               ))}
             </div>
           </div>

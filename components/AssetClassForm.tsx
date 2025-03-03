@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -109,60 +109,55 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
       <CardContent>
         <div className="space-y-4 mb-6">
           {classes.map((cls) => (
-            <Fragment key={cls.id}>
-              <div className="flex items-center space-x-2">
-                <div className="flex-1 space-y-1">
-                  <div className="grid grid-cols-1 lg:grid-cols-[1fr_100px] gap-x-6 gap-y-4 items-center">
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`name-${cls.id}`}>Nome</Label>
-                      <Input
-                        id={`name-${cls.id}`}
-                        value={cls.name}
-                        onChange={(e) =>
-                          handleUpdateClass(cls.id, "name", e.target.value)
-                        }
-                        className="w-full"
-                        placeholder="Nome da classe"
-                      />
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <Label htmlFor={`percentage-${cls.id}`}>
-                        Percentual (%)
-                      </Label>
-                      <Input
-                        id={`percentage-${cls.id}`}
-                        type="number"
-                        value={cls.percentage}
-                        onChange={(e) =>
-                          handleUpdateClass(
-                            cls.id,
-                            "percentage",
-                            e.target.value
-                          )
-                        }
-                        className="w-full"
-                        placeholder="%"
-                      />
-                    </div>
+            <div
+              className="flex items-center space-x-2 p-3 bg-muted rounded-md"
+              key={cls.id}
+            >
+              <div className="flex-1 space-y-1">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_100px] gap-x-6 gap-y-4 items-center">
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`name-${cls.id}`}>Nome</Label>
+                    <Input
+                      id={`name-${cls.id}`}
+                      value={cls.name}
+                      onChange={(e) =>
+                        handleUpdateClass(cls.id, "name", e.target.value)
+                      }
+                      className="w-full"
+                      placeholder="Nome da classe"
+                    />
                   </div>
 
-                  <div className="flex justify-start mt-4">
-                    <Button
-                      id={`remove-${cls.id}`}
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleRemoveClass(cls.id)}
-                      className="w-28"
-                    >
-                      Remover
-                    </Button>
+                  <div className="flex flex-col space-y-1">
+                    <Label htmlFor={`percentage-${cls.id}`}>
+                      Percentual (%)
+                    </Label>
+                    <Input
+                      id={`percentage-${cls.id}`}
+                      type="number"
+                      value={cls.percentage}
+                      onChange={(e) =>
+                        handleUpdateClass(cls.id, "percentage", e.target.value)
+                      }
+                      className="w-full"
+                      placeholder="%"
+                    />
                   </div>
                 </div>
-              </div>
 
-              <hr className="w-full border-t border-gray-300" />
-            </Fragment>
+                <div className="flex justify-start mt-4">
+                  <Button
+                    id={`remove-${cls.id}`}
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleRemoveClass(cls.id)}
+                    className="w-28"
+                  >
+                    Remover
+                  </Button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
