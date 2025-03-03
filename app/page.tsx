@@ -20,7 +20,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Article } from "@/components/Article";
-import Image from "next/image";
+import { Logo } from "@/components/Logo";
 
 const STEPS = {
   ASSET_CLASSES: "asset-classes",
@@ -258,13 +258,7 @@ export default function Home() {
   return (
     <main className="container mx-auto py-8 px-4">
       <div className="flex items-end gap-2 mb-4">
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          width={500}
-          height={500}
-          className="w-14 h-auto"
-        />
+        <Logo />
         <h1 className="text-2xl font-bold mb-2">Diagrama do Cerrado</h1>
       </div>
       <div className="text-sm flex flex-col gap-4 text-muted-foreground">
