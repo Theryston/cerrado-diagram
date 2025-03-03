@@ -288,12 +288,6 @@ export default function Home() {
             investir em cada ativo.
           </li>
         </ul>
-
-        <p>
-          <strong>OBS:</strong> A ferramenta irá salvar todos os dados no seu
-          navegador para que não precise informar os dados novamente sempre que
-          você acessar a ferramenta.
-        </p>
       </div>
 
       <Timeline steps={timelineSteps} currentStep={currentStep} />
@@ -326,6 +320,14 @@ export default function Home() {
       <Button variant="destructive" onClick={deleteAllData} className="mt-4">
         Limpar tudo
       </Button>
+
+      <div className="mt-4 text-sm text-muted-foreground">
+        <p>
+          <strong>OBS:</strong> A ferramenta irá salvar todos os dados no seu
+          navegador para que não precise informar os dados novamente sempre que
+          você acessar a ferramenta.
+        </p>
+      </div>
 
       <hr className="my-8" />
 

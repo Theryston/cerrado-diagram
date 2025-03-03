@@ -1,6 +1,6 @@
 export function Article() {
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold text-gray-900 mb-6">
         Diagrama do Cerrado: O Método Definitivo para Calcular Aportes em
         Investimentos
