@@ -45,6 +45,7 @@ export function InvestmentResults({
           actual: !isNaN(parsedValue) ? parsedValue : null,
         };
       }
+
       return inv;
     });
 
@@ -54,7 +55,7 @@ export function InvestmentResults({
   const handleSaveActual = () => {
     // Validate if all actual investments are valid (not negative)
     const hasInvalidValues = actualInvestments.some(
-      (inv) => inv.actual !== null && inv.actual < 0,
+      (inv) => inv.actual !== null && inv.actual < 0
     );
 
     if (hasInvalidValues) {
@@ -76,8 +77,11 @@ export function InvestmentResults({
     return acc;
   }, {});
 
-  // Filter out investments with zero suggested amount
   const hasInvestments = actualInvestments.some((inv) => inv.suggested > 0);
+  const totalInvestment = actualInvestments.reduce(
+    (acc, inv) => acc + inv.suggested,
+    0
+  );
 
   return (
     <Card className="w-full">
@@ -96,7 +100,7 @@ export function InvestmentResults({
               ([classId, investments]) => {
                 const assetClass = getAssetClass(classId);
                 const classInvestments = investments.filter(
-                  (inv) => inv.suggested > 0,
+                  (inv) => inv.suggested > 0
                 );
 
                 if (classInvestments.length === 0) return null;
@@ -123,11 +127,19 @@ export function InvestmentResults({
                                 </div>
                                 <div className="flex-1">
                                   <div className="text-sm">
-                                    Sugerido: R$ {inv.suggested.toFixed(2)}
+                                    Aporte Sugerido: R${" "}
+                                    {inv.suggested.toFixed(2)}
                                   </div>
                                   <div className="text-sm text-gray-500">
-                                    ({Math.floor(inv.suggested / asset.price)}{" "}
-                                    unidades)
+                                    ({inv.amount} unidades)
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    Ideal:{" "}
+                                    {(inv.idealPercentage * 100).toFixed(2)}%
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    Novo Percentual:{" "}
+                                    {(inv.newPercentage * 100).toFixed(2)}%
                                   </div>
                                 </div>
                                 <div className="w-32">
@@ -139,7 +151,7 @@ export function InvestmentResults({
                                     onChange={(e) =>
                                       handleActualChange(
                                         inv.assetId,
-                                        e.target.value,
+                                        e.target.value
                                       )
                                     }
                                     placeholder="Valor real"
@@ -153,8 +165,12 @@ export function InvestmentResults({
                     </div>
                   </div>
                 );
-              },
+              }
             )}
+
+            <div className="text-lg font-medium mb-2">
+              Total a investir: R$ {totalInvestment.toFixed(2)}
+            </div>
 
             <div className="flex space-x-4 mt-6">
               <Button

@@ -56,7 +56,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     try {
       // Fetch asset price
       const { price, minInvestment } = await fetchAssetPrice(
-        ticker.toUpperCase(),
+        ticker.toUpperCase()
       );
 
       // Create new asset
@@ -83,7 +83,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       onSave(updatedAssets);
     } catch (err) {
       setError(
-        "Erro ao buscar informações do ativo. Verifique o ticker e tente novamente.",
+        "Erro ao buscar informações do ativo. Verifique o ticker e tente novamente."
       );
       console.error(err);
     } finally {
@@ -154,7 +154,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       acc[classId].push(asset);
       return acc;
     },
-    {},
+    {}
   );
 
   return (
@@ -178,7 +178,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                 <div
                   key={asset.id}
                   className={`flex items-center space-x-2 p-3 border rounded-md ${getScoreClass(
-                    asset.score,
+                    asset.score
                   )}`}
                 >
                   <div className="flex-1">
@@ -197,7 +197,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                             handleUpdateAsset(
                               asset.id,
                               "ticker",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="w-24"
@@ -220,7 +220,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                             handleUpdateAsset(
                               asset.id,
                               "quantity",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="w-24"
@@ -242,7 +242,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                             handleUpdateAsset(
                               asset.id,
                               "classId",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm"
@@ -272,7 +272,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                               handleUpdateAsset(
                                 asset.id,
                                 "score",
-                                e.target.value,
+                                e.target.value
                               )
                             }
                             className="w-20"
@@ -299,7 +299,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                                 handleUpdateAsset(
                                   asset.id,
                                   "price",
-                                  e.target.value,
+                                  e.target.value
                                 );
                               }
                             }}
@@ -366,7 +366,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="score">Nota de Risco (1-10)</Label>
+            <Label htmlFor="score">Nota (1-10)</Label>
             <Input
               id="score"
               type="number"

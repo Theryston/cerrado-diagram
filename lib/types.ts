@@ -20,6 +20,8 @@ export interface Investment {
   amount: number;
   suggested: number;
   actual: number | null;
+  newPercentage: number;
+  idealPercentage: number;
 }
 
 export interface CerradoDiagram {
