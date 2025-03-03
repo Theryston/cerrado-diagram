@@ -6,7 +6,13 @@ export function calculateInvestmentDistribution(
   currentTotal: number,
   contributionAmount: number
 ): Investment[] {
-  const idealPercentageDistribution = assetClasses.map((assetClass) => {
+  // Novo total da carteira após o aporte
+  const newTotal = currentTotal + contributionAmount;
+
+  // ETAPA 1: Calcular percentuais ideais para cada ativo
+  const assetsWithDetails = [];
+
+  for (const assetClass of assetClasses) {
     const assetsInClass = assets.filter(
       (asset) => asset.classId === assetClass.id
     );
@@ -15,140 +21,120 @@ export function calculateInvestmentDistribution(
       0
     );
 
-    return {
-      ...assetClass,
-      assets: assetsInClass.map((asset) => {
-        return {
-          ...asset,
-          percentage:
-            ((asset.score / totalScore) * assetClass.percentage) / 100,
-        };
-      }),
-    };
-  });
+    for (const asset of assetsInClass) {
+      // Peso relativo na classe baseado na nota
+      const weight = asset.score / totalScore;
+      // Percentual ideal na carteira total
+      const idealPercentage = (weight * assetClass.percentage) / 100;
 
-  const newTotal = currentTotal + contributionAmount;
-  let missingAmount = 0;
+      // Valores atuais
+      const currentValue = asset.price * asset.quantity;
+      const currentPercentage = currentValue / currentTotal;
 
-  let newAssetValeuBasedInPercentage = assetClasses
-    .map((assetClass) => {
-      const assetsInClass = assets.filter(
-        (asset) => asset.classId === assetClass.id
-      );
-      const idealPercentageDistributionClass = idealPercentageDistribution.find(
-        (idealAssetClass) => idealAssetClass.id === assetClass.id
-      );
-      const idealPercentageDistributionAssets =
-        idealPercentageDistributionClass?.assets;
+      // Valor ideal após aporte
+      const idealValue = newTotal * idealPercentage;
 
-      return {
-        ...assetClass,
-        assets: assetsInClass.map((asset) => {
-          const idealAsset = idealPercentageDistributionAssets?.find(
-            (idealAsset) => idealAsset.id === asset.id
-          );
+      // Diferença entre ideal e atual
+      const valueDifference = idealValue - currentValue;
 
-          if (!idealAsset) {
-            return undefined;
-          }
-
-          console.log(
-            "idealAsset",
-            idealAsset.ticker,
-            "idealAsset.percentage",
-            idealAsset.percentage
-          );
-
-          const suggestedTotalToBuy = newTotal * idealAsset.percentage;
-          const currentTotal = asset.price * asset.quantity;
-          let difference = suggestedTotalToBuy - currentTotal;
-
-          if (difference < 0) {
-            missingAmount += difference * -1;
-            difference = 0;
-          }
-
-          return {
-            ...asset,
-            suggestedTotalToBuy,
-            currentTotal,
-            difference,
-            idealPercentage: idealAsset.percentage,
-          };
-        }),
-      };
-    })
-    .filter((assetClass) => assetClass !== undefined)
-    .map((assetClass) => {
-      return {
-        ...assetClass,
-        assets: assetClass.assets.filter((asset) => asset !== undefined),
-      };
-    });
-
-  newAssetValeuBasedInPercentage = newAssetValeuBasedInPercentage.map(
-    (assetClass) => {
-      return {
-        ...assetClass,
-        assets: assetClass.assets.map((asset) => {
-          const minimumAmountToBuy = asset.price * asset.minInvestment;
-          if (
-            asset.suggestedTotalToBuy < minimumAmountToBuy &&
-            asset.suggestedTotalToBuy !== 0
-          ) {
-            const missingAmountToBuy = asset.difference / minimumAmountToBuy;
-
-            if (missingAmount >= missingAmountToBuy) {
-              missingAmount -= missingAmountToBuy;
-              asset.suggestedTotalToBuy = asset.price * asset.minInvestment;
-            }
-          }
-
-          const isDivisible =
-            asset.suggestedTotalToBuy % minimumAmountToBuy === 0;
-
-          if (!isDivisible) {
-            const missingAmountToBeDivisible =
-              minimumAmountToBuy -
-              (asset.suggestedTotalToBuy % minimumAmountToBuy);
-
-            if (missingAmount >= missingAmountToBeDivisible) {
-              missingAmount -= missingAmountToBeDivisible;
-              asset.suggestedTotalToBuy = asset.price * asset.minInvestment;
-            } else {
-              const suggestedQuantity = Math.floor(
-                asset.suggestedTotalToBuy / minimumAmountToBuy
-              );
-
-              const newSuggestedTotal = suggestedQuantity * minimumAmountToBuy;
-
-              missingAmount += asset.suggestedTotalToBuy - newSuggestedTotal;
-              asset.suggestedTotalToBuy = newSuggestedTotal;
-            }
-          }
-
-          return { ...asset };
-        }),
-      };
+      assetsWithDetails.push({
+        asset,
+        idealPercentage,
+        currentValue,
+        currentPercentage,
+        idealValue,
+        valueDifference,
+        percentageDifference: idealPercentage - currentPercentage,
+      });
     }
+  }
+
+  // ETAPA 2: Ordenar ativos por prioridade (maior diferença percentual primeiro)
+  assetsWithDetails.sort(
+    (a, b) => b.percentageDifference - a.percentageDifference
   );
 
-  const newAssets = newAssetValeuBasedInPercentage.flatMap(
-    (assetClass) => assetClass.assets
-  );
+  // ETAPA 3: Inicializar plano de alocação
+  const allocations = assetsWithDetails.map((item) => ({
+    asset: item.asset,
+    idealPercentage: item.idealPercentage,
+    currentValue: item.currentValue,
+    amountToInvest: 0,
+    unitsToInvest: 0,
+  }));
 
-  return newAssets.map((asset) => {
-    const newPercentage =
-      (asset.suggestedTotalToBuy + asset.price * asset.quantity) / newTotal;
+  // ETAPA 4: Distribuir o aporte
+  let remainingAmount = contributionAmount;
+
+  // Primeira passagem: alocar para ativos que precisam de mais investimento
+  for (let i = 0; i < assetsWithDetails.length && remainingAmount > 0; i++) {
+    const item = assetsWithDetails[i];
+    const allocation = allocations[i];
+
+    // Pular ativos que não precisam de mais investimento
+    if (item.valueDifference <= 0) continue;
+
+    const minimumInvestment = item.asset.price * item.asset.minInvestment;
+
+    // Verificar se podemos comprar pelo menos o mínimo
+    if (minimumInvestment <= remainingAmount) {
+      // Quanto podemos investir (limitado pela necessidade e pelo valor disponível)
+      const maxAmount = Math.min(item.valueDifference, remainingAmount);
+
+      // Calcular quantas unidades podemos comprar
+      const maxUnits = Math.floor(maxAmount / item.asset.price);
+
+      // Ajustar para respeitar o mínimo de investimento
+      const unitsToInvest =
+        Math.floor(maxUnits / item.asset.minInvestment) *
+        item.asset.minInvestment;
+
+      if (unitsToInvest > 0) {
+        const amountToInvest = unitsToInvest * item.asset.price;
+
+        allocation.amountToInvest = amountToInvest;
+        allocation.unitsToInvest = unitsToInvest;
+
+        remainingAmount -= amountToInvest;
+      }
+    }
+  }
+
+  // Segunda passagem: distribuir o valor restante
+  while (remainingAmount > 0) {
+    let allocated = false;
+
+    // Tentar alocar primeiro para os ativos mais prioritários
+    for (let i = 0; i < allocations.length; i++) {
+      const allocation = allocations[i];
+      const asset = allocation.asset;
+      const minimumInvestment = asset.price * asset.minInvestment;
+
+      if (minimumInvestment <= remainingAmount) {
+        allocation.amountToInvest += minimumInvestment;
+        allocation.unitsToInvest += asset.minInvestment;
+        remainingAmount -= minimumInvestment;
+        allocated = true;
+        break;
+      }
+    }
+
+    if (!allocated) break; // Não foi possível alocar mais
+  }
+
+  // ETAPA 5: Preparar o resultado final
+  return allocations.map((allocation) => {
+    const newValue = allocation.currentValue + allocation.amountToInvest;
+    const newPercentage = newValue / newTotal;
 
     return {
-      suggested: asset.suggestedTotalToBuy,
-      amount: asset.suggestedTotalToBuy / asset.price,
+      classId: allocation.asset.classId,
+      assetId: allocation.asset.id,
+      suggested: allocation.amountToInvest,
+      amount: allocation.unitsToInvest,
       actual: null,
-      newPercentage: newPercentage,
-      classId: asset.classId,
-      assetId: asset.id,
-      idealPercentage: asset.idealPercentage,
+      newPercentage,
+      idealPercentage: allocation.idealPercentage,
     };
   });
 }
