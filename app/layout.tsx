@@ -9,9 +9,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Diagrama do Cerrado - Ferramenta de Investimentos",
+  title:
+    "Ferramenta Diagrama do Cerrado - Calcule quanto você deve investir em cada ativo automaticamente",
   description:
-    "Ferramenta para cálculo de distribuição de investimentos usando o método do Diagrama do Cerrado",
+    "Informe os seus ativos e a ferramente irá te falar quanto deve investir em cada um usando o método do Diagrama do Cerrado. A ferramenta é totalmente gratuita e não requer cadastro!",
 };
 
 export default function RootLayout({

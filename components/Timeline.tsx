@@ -64,7 +64,7 @@ export function Timeline({ steps, currentStep }: TimelineProps) {
               {isDisabled && (
                 <div className="flex items-center text-gray-500">
                   <CircleSlash size={16} className="mr-2" />
-                  <span>Complete previous steps first</span>
+                  <span>Complete os passos anteriores</span>
                 </div>
               )}
             </div>
