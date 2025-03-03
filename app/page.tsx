@@ -51,7 +51,7 @@ export default function Home() {
       [STEPS.CONTRIBUTION]: false,
       [STEPS.RESULTS]: false,
       [STEPS.COMPLETE]: false,
-    }
+    },
   );
 
   // Initialize data from localStorage
@@ -61,7 +61,7 @@ export default function Home() {
         // For debugging - log what's in localStorage
         console.log(
           "Raw localStorage:",
-          localStorage.getItem("cerrado-diagram-data")
+          localStorage.getItem("cerrado-diagram-data"),
         );
 
         const data = initializeData();
@@ -129,7 +129,7 @@ export default function Home() {
     if (assets.length > 0) {
       const total = assets.reduce(
         (sum, asset) => sum + asset.price * asset.quantity,
-        0
+        0,
       );
       setTotalInvestment(total);
       updateTotalInvestment(total);
@@ -175,7 +175,7 @@ export default function Home() {
         assetClasses,
         assets,
         totalInvestment,
-        amount
+        amount,
       );
 
       setInvestments(calculatedInvestments);
@@ -201,7 +201,7 @@ export default function Home() {
     actualInvestments.forEach((newInv) => {
       // Find the current investment to compare
       const currentInv = investments.find(
-        (inv) => inv.assetId === newInv.assetId
+        (inv) => inv.assetId === newInv.assetId,
       );
 
       // Only process if there's an actual value and it's different from before
@@ -211,7 +211,7 @@ export default function Home() {
         (currentInv?.actual === null || currentInv?.actual !== newInv.actual)
       ) {
         const assetIndex = updatedAssets.findIndex(
-          (a) => a.id === newInv.assetId
+          (a) => a.id === newInv.assetId,
         );
         if (assetIndex !== -1) {
           const asset = updatedAssets[assetIndex];
@@ -222,7 +222,7 @@ export default function Home() {
           const additionalUnits = Math.floor(additionalAmount / asset.price);
 
           console.log(
-            `Asset ${asset.ticker}: Adding ${additionalUnits} units from R$ ${additionalAmount}`
+            `Asset ${asset.ticker}: Adding ${additionalUnits} units from R$ ${additionalAmount}`,
           );
 
           if (additionalUnits > 0) {
@@ -263,9 +263,9 @@ export default function Home() {
     toast.success(
       totalAdded > 0
         ? `Sucesso! Adicionados R$ ${totalAdded.toFixed(
-            2
+            2,
           )} em ${totalAssets} ativo(s).`
-        : "Aportes salvos com sucesso!"
+        : "Aportes salvos com sucesso!",
     );
 
     // Scroll to asset step to see updated assets

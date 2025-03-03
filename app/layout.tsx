@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Diagrama do Cerrado - Ferramenta de Investimentos",
-  description: "Ferramenta para cálculo de distribuição de investimentos usando o método do Diagrama do Cerrado",
+  description:
+    "Ferramenta para cálculo de distribuição de investimentos usando o método do Diagrama do Cerrado",
 };
 
 export default function RootLayout({

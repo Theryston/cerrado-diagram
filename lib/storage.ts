@@ -1,45 +1,59 @@
-import { CerradoDiagram, AssetClass, Asset, Investment } from './types';
+import { CerradoDiagram, AssetClass, Asset, Investment } from "./types";
 
-const STORAGE_KEY = 'cerrado-diagram-data';
+const STORAGE_KEY = "cerrado-diagram-data";
 
 // Get data from localStorage
 export function getStoredData(): CerradoDiagram | null {
-  if (typeof window === 'undefined') return null;
-  
+  if (typeof window === "undefined") return null;
+
   try {
     const storedData = localStorage.getItem(STORAGE_KEY);
     if (!storedData) return null;
-    
+
     const parsedData = JSON.parse(storedData) as CerradoDiagram;
-    
+
     // Ensure all properties exist with proper defaults
     return {
-      assetClasses: Array.isArray(parsedData.assetClasses) ? parsedData.assetClasses : [],
+      assetClasses: Array.isArray(parsedData.assetClasses)
+        ? parsedData.assetClasses
+        : [],
       assets: Array.isArray(parsedData.assets) ? parsedData.assets : [],
-      investments: Array.isArray(parsedData.investments) ? parsedData.investments : [],
-      totalInvestment: typeof parsedData.totalInvestment === 'number' ? parsedData.totalInvestment : 0,
-      contributionAmount: typeof parsedData.contributionAmount === 'number' ? parsedData.contributionAmount : 0,
+      investments: Array.isArray(parsedData.investments)
+        ? parsedData.investments
+        : [],
+      totalInvestment:
+        typeof parsedData.totalInvestment === "number"
+          ? parsedData.totalInvestment
+          : 0,
+      contributionAmount:
+        typeof parsedData.contributionAmount === "number"
+          ? parsedData.contributionAmount
+          : 0,
     };
   } catch (error) {
-    console.error('Error parsing stored data:', error);
+    console.error("Error parsing stored data:", error);
     return null;
   }
 }
 
 // Save data to localStorage
 export function saveData(data: CerradoDiagram): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     // Ensure all required properties exist
     const sanitizedData: CerradoDiagram = {
       assetClasses: Array.isArray(data.assetClasses) ? data.assetClasses : [],
       assets: Array.isArray(data.assets) ? data.assets : [],
       investments: Array.isArray(data.investments) ? data.investments : [],
-      totalInvestment: typeof data.totalInvestment === 'number' ? data.totalInvestment : 0,
-      contributionAmount: typeof data.contributionAmount === 'number' ? data.contributionAmount : 0,
+      totalInvestment:
+        typeof data.totalInvestment === "number" ? data.totalInvestment : 0,
+      contributionAmount:
+        typeof data.contributionAmount === "number"
+          ? data.contributionAmount
+          : 0,
     };
-    
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizedData));
     console.log("Data saved to localStorage:", sanitizedData);
   } catch (error) {
@@ -50,11 +64,11 @@ export function saveData(data: CerradoDiagram): void {
 // Initialize or get stored data
 export function initializeData(): CerradoDiagram {
   const storedData = getStoredData();
-  
+
   if (storedData) {
     return storedData;
   }
-  
+
   const initialData: CerradoDiagram = {
     assetClasses: [],
     assets: [],
@@ -62,7 +76,7 @@ export function initializeData(): CerradoDiagram {
     totalInvestment: 0,
     contributionAmount: 0,
   };
-  
+
   saveData(initialData);
   return initialData;
 }
@@ -116,7 +130,7 @@ export function resetData(): CerradoDiagram {
     totalInvestment: 0,
     contributionAmount: 0,
   };
-  
+
   saveData(initialData);
   return initialData;
 }

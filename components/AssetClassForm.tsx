@@ -71,7 +71,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   const handleUpdateClass = (
     id: string,
     field: keyof AssetClass,
-    value: string
+    value: string,
   ) => {
     const updatedClasses = classes.map((cls) => {
       if (cls.id === id) {

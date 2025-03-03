@@ -54,7 +54,7 @@ export function InvestmentResults({
   const handleSaveActual = () => {
     // Validate if all actual investments are valid (not negative)
     const hasInvalidValues = actualInvestments.some(
-      (inv) => inv.actual !== null && inv.actual < 0
+      (inv) => inv.actual !== null && inv.actual < 0,
     );
 
     if (hasInvalidValues) {
@@ -96,7 +96,7 @@ export function InvestmentResults({
               ([classId, investments]) => {
                 const assetClass = getAssetClass(classId);
                 const classInvestments = investments.filter(
-                  (inv) => inv.suggested > 0
+                  (inv) => inv.suggested > 0,
                 );
 
                 if (classInvestments.length === 0) return null;
@@ -139,7 +139,7 @@ export function InvestmentResults({
                                     onChange={(e) =>
                                       handleActualChange(
                                         inv.assetId,
-                                        e.target.value
+                                        e.target.value,
                                       )
                                     }
                                     placeholder="Valor real"
@@ -153,7 +153,7 @@ export function InvestmentResults({
                     </div>
                   </div>
                 );
-              }
+              },
             )}
 
             <div className="flex space-x-4 mt-6">

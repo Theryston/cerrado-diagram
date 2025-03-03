@@ -9,7 +9,7 @@ export const fetchAssetPrice = async (ticker: string) => {
   try {
     const apiKey = process.env.NEXT_PUBLIC_BRAPI_API_KEY;
     const response = await api.get(
-      `/quote/${ticker}?range=1d&interval=1d&fundamental=true&token=${apiKey}`
+      `/quote/${ticker}?range=1d&interval=1d&fundamental=true&token=${apiKey}`,
     );
 
     if (
@@ -28,7 +28,7 @@ export const fetchAssetPrice = async (ticker: string) => {
   } catch (error) {
     console.error("Error fetching asset price:", error);
     toast.error(
-      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`
+      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`,
     );
     // Fallback for testing/development
     return {
