@@ -351,16 +351,6 @@ export default function Home() {
 
         <Timeline steps={timelineSteps} currentStep={currentStep} />
 
-        <div className="mt-4 text-sm text-muted-foreground">
-          <p>
-            <span className="text-primary">
-              O código da carteira é <strong>{code}</strong>
-            </span>
-            . Use esse código para importar os dados na próxima vez que você
-            acessar a ferramenta.
-          </p>
-        </div>
-
         <hr className="my-8" />
 
         <div className="mt-12">
