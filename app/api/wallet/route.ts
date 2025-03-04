@@ -1,4 +1,4 @@
-import { DEFAULT_ASSET_CLASSES } from "@/lib/constants";
+import { DEFAULT_ASSET_CLASSES, STEPS } from "@/lib/constants";
 import { CerradoDiagram } from "@/lib/types";
 import { createClient } from "redis";
 
@@ -36,6 +36,9 @@ export async function GET(request: Request) {
     investments: [],
     totalInvestment: 0,
     contributionAmount: 0,
+    expandedSteps: Object.fromEntries(
+      Object.values(STEPS).map((step) => [step, true])
+    ),
   };
 
   if (!data) {

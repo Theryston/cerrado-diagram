@@ -1,5 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Check, CircleSlash, ChevronDown, ChevronUp } from "lucide-react";
+import { STEPS } from "@/lib/constants";
+import { AssetClassForm } from "./AssetClassForm";
+import { AssetForm } from "./AssetForm";
+import { ContributionForm } from "./ContributionForm";
+import { InvestmentResults } from "./InvestmentResults";
+import { useGlobal } from "@/app/context";
 
 export interface TimelineStep {
   id: string;
@@ -9,15 +15,42 @@ export interface TimelineStep {
   isComplete: boolean;
 }
 
-interface TimelineProps {
-  steps: TimelineStep[];
-  currentStep: string;
-}
+export function Timeline() {
+  const { completedSteps, currentStep, expandedSteps, setExpandedSteps } =
+    useGlobal();
 
-export function Timeline({ steps, currentStep }: TimelineProps) {
-  const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>(
-    Object.fromEntries(steps.map((step) => [step.id, true]))
-  );
+  const steps: TimelineStep[] = [
+    {
+      id: STEPS.ASSET_CLASSES,
+      title: "1. Classes de Ativos",
+      description:
+        "Defina as classes de ativos que deseja incluir no seu diagrama e o percentual para cada classe.",
+      isComplete: completedSteps[STEPS.ASSET_CLASSES],
+      content: <AssetClassForm />,
+    },
+    {
+      id: STEPS.ASSETS,
+      title: "2. Ativos",
+      description:
+        "Defina os ativos que você deseja incluir no seu diagrama e a quantidade que você tem de cada ativo. (OBS: Se você não tem um ativo, você pode inserir o valor 0)",
+      isComplete: completedSteps[STEPS.ASSETS],
+      content: <AssetForm />,
+    },
+    {
+      id: STEPS.CONTRIBUTION,
+      title: "3. Aporte",
+      description:
+        "Defina o valor que você deseja investir, e o diagrama calculará a quantidade de cada ativo para você.",
+      isComplete: completedSteps[STEPS.CONTRIBUTION],
+      content: <ContributionForm />,
+    },
+    {
+      id: STEPS.RESULTS,
+      title: "4. Resultado",
+      isComplete: completedSteps[STEPS.RESULTS],
+      content: <InvestmentResults />,
+    },
+  ];
 
   const toggleStepExpansion = (stepId: string) => {
     setExpandedSteps((prev) => ({

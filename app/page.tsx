@@ -1,51 +1,10 @@
 "use client";
 
-import { AssetClassForm } from "@/components/AssetClassForm";
-import { AssetForm } from "@/components/AssetForm";
-import { ContributionForm } from "@/components/ContributionForm";
-import { InvestmentResults } from "@/components/InvestmentResults";
-import { Timeline, TimelineStep } from "@/components/Timeline";
+import { Timeline } from "@/components/Timeline";
 import { Article } from "@/components/Article";
 import { Header } from "@/components/Header";
-import { STEPS } from "@/lib/constants";
-import { useGlobal } from "./context";
 
 export default function Home() {
-  const { completedSteps, currentStep } = useGlobal();
-
-  const timelineSteps: TimelineStep[] = [
-    {
-      id: STEPS.ASSET_CLASSES,
-      title: "1. Classes de Ativos",
-      description:
-        "Defina as classes de ativos que deseja incluir no seu diagrama e o percentual para cada classe.",
-      isComplete: completedSteps[STEPS.ASSET_CLASSES],
-      content: <AssetClassForm />,
-    },
-    {
-      id: STEPS.ASSETS,
-      title: "2. Ativos",
-      description:
-        "Defina os ativos que você deseja incluir no seu diagrama e a quantidade que você tem de cada ativo. (OBS: Se você não tem um ativo, você pode inserir o valor 0)",
-      isComplete: completedSteps[STEPS.ASSETS],
-      content: <AssetForm />,
-    },
-    {
-      id: STEPS.CONTRIBUTION,
-      title: "3. Aporte",
-      description:
-        "Defina o valor que você deseja investir, e o diagrama calculará a quantidade de cada ativo para você.",
-      isComplete: completedSteps[STEPS.CONTRIBUTION],
-      content: <ContributionForm />,
-    },
-    {
-      id: STEPS.RESULTS,
-      title: "4. Resultado",
-      isComplete: completedSteps[STEPS.RESULTS],
-      content: <InvestmentResults />,
-    },
-  ];
-
   return (
     <>
       <Header />
@@ -84,7 +43,7 @@ export default function Home() {
           </ul>
         </div>
 
-        <Timeline steps={timelineSteps} currentStep={currentStep} />
+        <Timeline />
 
         <hr className="my-8" />
 

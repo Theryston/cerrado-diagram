@@ -31,4 +31,5 @@ export interface CerradoDiagram {
   investments: Investment[];
   totalInvestment: number;
   contributionAmount: number;
+  expandedSteps: Record<string, boolean>;
 }

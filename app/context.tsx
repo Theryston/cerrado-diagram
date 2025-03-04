@@ -31,6 +31,10 @@ type ContextType = {
   setCode: React.Dispatch<React.SetStateAction<string>>;
   totalInvestment: number;
   setTotalInvestment: React.Dispatch<React.SetStateAction<number>>;
+  expandedSteps: Record<string, boolean>;
+  setExpandedSteps: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
   onReset: () => void;
 };
 
@@ -66,6 +70,10 @@ export const GlobalContextProvider = ({
   const router = useRouter();
   const onSaveTimeout = useRef<NodeJS.Timeout | null>(null);
   const { mutateAsync: saveWalletDataMutation } = useSaveWalletData(code);
+
+  const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>(
+    Object.fromEntries(Object.values(STEPS).map((step) => [step, false]))
+  );
 
   const calculateSteps = useCallback(
     ({
@@ -207,8 +215,9 @@ export const GlobalContextProvider = ({
       setContributionAmount(data.contributionAmount || 0);
       setInvestments(investmentsFromStorage);
       setTotalInvestment(data.totalInvestment || 0);
+      if (data.expandedSteps) setExpandedSteps(data.expandedSteps);
     }
-  }, [data, setAssetClasses]);
+  }, [data]);
 
   useEffect(() => {
     if (assets.length > 0) {
@@ -237,6 +246,7 @@ export const GlobalContextProvider = ({
         assets,
         contributionAmount,
         investments,
+        expandedSteps,
       };
 
       const currentDataStr = JSON.stringify(data);
@@ -253,6 +263,7 @@ export const GlobalContextProvider = ({
     contributionAmount,
     data,
     investments,
+    expandedSteps,
     saveWalletDataMutation,
   ]);
 
@@ -280,6 +291,8 @@ export const GlobalContextProvider = ({
         totalInvestment,
         setTotalInvestment,
         onReset,
+        expandedSteps,
+        setExpandedSteps,
       }}
     >
       {children}
