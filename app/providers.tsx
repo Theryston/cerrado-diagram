@@ -4,14 +4,11 @@ import { Suspense, useState } from "react";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 import { toast, Toaster } from "sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
-      <ProgressBar height="2px" color="#000" options={{ showSpinner: false }} />
-
       <QueryClientProvider>{children}</QueryClientProvider>
       <Toaster richColors closeButton />
     </Suspense>
