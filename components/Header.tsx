@@ -49,48 +49,50 @@ export function Header() {
   }, [codeValue, code, setCode, queryClient]);
 
   return (
-    <header className="flex items-center justify-between mb-4 border-b border-gray-200 p-4">
-      <Link
-        href="/"
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-      >
-        <Logo />
-        <h1 className="text-lg font-bold">Diagrama do Cerrado</h1>
-      </Link>
+    <header className="border-b border-gray-200 mb-4">
+      <div className="flex items-center justify-between container mx-auto p-4">
+        <Link
+          href="/"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <Logo />
+          <h1 className="text-lg font-bold">Diagrama do Cerrado</h1>
+        </Link>
 
-      <div className="flex items-center gap-2">
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="cursor-pointer"
-              title="Importar carteira"
-            >
-              <Download className="w-4 h-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Importar dados</DialogTitle>
-              <DialogDescription>
-                Caso você tenha uma carteira que usou para calcular o Diagrama
-                do Cerrado em outro dispositivo, você pode importar para aqui
-                usando o código da carteira.
-              </DialogDescription>
-              <Input
-                type="text"
-                placeholder="Código da carteira"
-                value={codeValue}
-                onChange={(e) => setCodeValue(e.target.value)}
-              />
-
-              <Button onClick={handleImport} disabled={isImporting}>
-                {isImporting ? "Importando..." : "Importar"}
+        <div className="flex items-center gap-2">
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="cursor-pointer"
+                title="Importar carteira"
+              >
+                <Download className="w-4 h-4" />
               </Button>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Importar dados</DialogTitle>
+                <DialogDescription>
+                  Caso você tenha uma carteira que usou para calcular o Diagrama
+                  do Cerrado em outro dispositivo, você pode importar para aqui
+                  usando o código da carteira.
+                </DialogDescription>
+                <Input
+                  type="text"
+                  placeholder="Código da carteira"
+                  value={codeValue}
+                  onChange={(e) => setCodeValue(e.target.value)}
+                />
+
+                <Button onClick={handleImport} disabled={isImporting}>
+                  {isImporting ? "Importando..." : "Importar"}
+                </Button>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </header>
   );
