@@ -214,7 +214,6 @@ export const GlobalContextProvider = ({
       setAssets(assetsFromStorage);
       setContributionAmount(data.contributionAmount || 0);
       setInvestments(investmentsFromStorage);
-      setTotalInvestment(data.totalInvestment || 0);
       if (data.expandedSteps) setExpandedSteps(data.expandedSteps);
     }
   }, [data]);

@@ -118,11 +118,10 @@ export function AssetForm() {
       setQuantity("");
       setClassId("");
       setScore("");
-    } catch (err) {
+    } catch {
       setError(
         "Erro ao buscar informações do ativo. Verifique o ticker e tente novamente."
       );
-      console.error(err);
     } finally {
       setLoading(false);
     }

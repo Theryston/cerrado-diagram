@@ -34,7 +34,6 @@ export async function GET(request: Request) {
     assetClasses: DEFAULT_ASSET_CLASSES,
     assets: [],
     investments: [],
-    totalInvestment: 0,
     contributionAmount: 0,
     expandedSteps: Object.fromEntries(
       Object.values(STEPS).map((step) => [step, true])

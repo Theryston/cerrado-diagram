@@ -32,8 +32,7 @@ export async function GET(request: Request) {
     }
 
     throw new Error("Asset not found");
-  } catch (error) {
-    console.error("Error fetching asset price:", error);
+  } catch {
     return Response.json(
       { error: "Error fetching asset price" },
       { status: 500 }
