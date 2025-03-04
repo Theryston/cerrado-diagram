@@ -4,6 +4,7 @@ import "./globals.css";
 import clsx from "clsx";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Providers } from "./providers";
+import { GoogleAdSense } from "@/components/AdSense";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GMT_ID || ""} />
+      <GoogleAdSense />
 
       <body className={clsx(inter.className, "antialiased")}>
         <Providers>{children}</Providers>
