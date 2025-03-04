@@ -7,6 +7,12 @@ import { Label } from "@/components/ui/label";
 import { fetchAssetPrice } from "@/lib/api";
 import { getIdealPercentage } from "@/lib/calculator";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
+import {
+  DEFAULT_ASSET_CLASSES_IDS,
+  DEFAULT_TESOURO_TYPES,
+} from "@/lib/constants";
+import toast from "react-hot-toast";
 
 interface AssetFormProps {
   assets: Asset[];
@@ -22,17 +28,24 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
   const [score, setScore] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [tesouroType, setTesouroType] = useState<string>("selic");
   const router = useRouter();
 
-  // Update currentAssets when assets props changes
   useEffect(() => {
     setCurrentAssets(assets);
   }, [assets]);
 
   const handleAddAsset = async () => {
-    // Validate inputs
-    if (!ticker.trim()) {
+    const isTesouroDireto =
+      classId === DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO;
+
+    if (!ticker.trim() && !isTesouroDireto) {
       setError("Ticker é obrigatório");
+      return;
+    }
+
+    if (isTesouroDireto && !tesouroType) {
+      setError("Selecione um tipo de tesouro");
       return;
     }
 
@@ -57,15 +70,17 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     setError("");
 
     try {
-      // Fetch asset price
-      const { price, minInvestment } = await fetchAssetPrice(
-        ticker.toUpperCase()
-      );
+      let { price, minInvestment } = { price: 0, minInvestment: 0.01 };
 
-      // Create new asset
+      if (!isTesouroDireto) {
+        ({ price, minInvestment } = await fetchAssetPrice(
+          ticker.toUpperCase()
+        ));
+      }
+
       const newAsset: Asset = {
         id: Date.now().toString(),
-        ticker: ticker.toUpperCase(),
+        ticker: isTesouroDireto ? tesouroType : ticker.toUpperCase(),
         classId,
         quantity: parsedQuantity,
         price,
@@ -73,16 +88,19 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
         score: parsedScore,
       };
 
+      if (isTesouroDireto) {
+        toast.error("Insira o preço do tesouro direto manualmente");
+      }
+
       const updatedAssets = [...currentAssets, newAsset];
       setCurrentAssets(updatedAssets);
 
-      // Clear inputs
       setTicker("");
+      setTesouroType("selic");
       setQuantity("");
       setClassId("");
       setScore("");
 
-      // Save to parent component
       onSave(updatedAssets);
     } catch (err) {
       setError(
@@ -328,27 +346,6 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
 
         <div className="flex flex-col space-y-4 mt-6">
           <div>
-            <Label htmlFor="ticker">Ticker</Label>
-            <Input
-              id="ticker"
-              value={ticker}
-              onChange={(e) => setTicker(e.target.value)}
-              placeholder="Ex: PETR4 (Petrobras), LFTS11 (Tesouro Selic)..."
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="quantity">Quantidade</Label>
-            <Input
-              id="quantity"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Ex: 10"
-            />
-          </div>
-
-          <div>
             <Label htmlFor="assetClass">Classe de Ativo</Label>
             <select
               id="assetClass"
@@ -363,6 +360,53 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div
+            className={clsx(
+              classId === DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO && "hidden"
+            )}
+          >
+            <Label htmlFor="ticker">Ticker</Label>
+            <Input
+              id="ticker"
+              value={ticker}
+              onChange={(e) => setTicker(e.target.value)}
+              placeholder="Ex: PETR4 (Petrobras), LFTS11 (Tesouro Selic)..."
+            />
+          </div>
+
+          <div
+            className={clsx(
+              classId !== DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO && "hidden"
+            )}
+          >
+            <Label htmlFor="tesouroType">Tipo de Tesouro</Label>
+            <select
+              id="tesouroType"
+              value={tesouroType}
+              onChange={(e) =>
+                setTesouroType(e.target.value as "selic" | "prefixado")
+              }
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {DEFAULT_TESOURO_TYPES.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label htmlFor="quantity">Quantidade</Label>
+            <Input
+              id="quantity"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="Ex: 10"
+            />
           </div>
 
           <div>

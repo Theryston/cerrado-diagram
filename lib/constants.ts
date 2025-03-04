@@ -17,19 +17,19 @@ export const DEFAULT_ASSET_CLASSES = [
   {
     id: DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO,
     name: "Tesouro Direto",
-    percentage: 10,
+    percentage: 50,
     color: "#1E90FF",
   },
   {
     id: DEFAULT_ASSET_CLASSES_IDS.FIIS,
     name: "FIIs",
-    percentage: 0,
+    percentage: 30,
     color: "#32CD32",
   },
   {
     id: DEFAULT_ASSET_CLASSES_IDS.ACAO,
     name: "Ações",
-    percentage: 0,
+    percentage: 10,
     color: "#FF4500",
   },
   {
@@ -85,5 +85,16 @@ export const DEFAULT_ASSET_CLASSES = [
     name: "Outros",
     percentage: 0,
     color: "#808080",
+  },
+];
+
+export const DEFAULT_TESOURO_TYPES = [
+  {
+    id: "selic",
+    name: "Selic",
+  },
+  {
+    id: "prefixado",
+    name: "Prefixado",
   },
 ];

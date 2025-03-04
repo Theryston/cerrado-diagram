@@ -38,7 +38,9 @@ export function CharClass({
           data={chartData}
           dataKey="percentage"
           nameKey="name"
-          innerRadius={window.innerWidth < 768 ? 45 : 60}
+          innerRadius={
+            typeof window !== "undefined" && window.innerWidth < 768 ? 45 : 60
+          }
           strokeWidth={5}
         >
           <Label
