@@ -248,7 +248,12 @@ export default function Home() {
       );
 
       setInvestments(calculatedInvestments);
-      updateInvestments(calculatedInvestments);
+      handleSave({
+        newAssetClasses: assetClasses,
+        newAssets: assets,
+        newContributionAmount: amount,
+        newInvestments: calculatedInvestments,
+      });
 
       setCurrentStep(STEPS.RESULTS);
     } else {
