@@ -90,11 +90,11 @@ export const DEFAULT_ASSET_CLASSES = [
 
 export const DEFAULT_TESOURO_TYPES = [
   {
-    id: "selic",
+    id: "SELIC",
     name: "Selic",
   },
   {
-    id: "prefixado",
+    id: "PREFIXADO",
     name: "Prefixado",
   },
 ];

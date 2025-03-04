@@ -24,7 +24,7 @@ export function AssetForm() {
   const [score, setScore] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [tesouroType, setTesouroType] = useState<string>("selic");
+  const [tesouroType, setTesouroType] = useState<string>("SELIC");
   const [isTesouroDireto, setIsTesouroDireto] = useState(false);
   const router = useRouter();
   const setTickerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -114,7 +114,7 @@ export function AssetForm() {
 
       setTicker("");
       setTickerValue("");
-      setTesouroType("selic");
+      setTesouroType("SELIC");
       setQuantity("");
       setClassId("");
       setScore("");
@@ -397,9 +397,7 @@ export function AssetForm() {
             <select
               id="tesouroType"
               value={tesouroType}
-              onChange={(e) =>
-                setTesouroType(e.target.value as "selic" | "prefixado")
-              }
+              onChange={(e) => setTesouroType(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {DEFAULT_TESOURO_TYPES.map((type) => (
