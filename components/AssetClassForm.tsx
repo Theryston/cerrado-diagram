@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "./ui/input";
+import { CharClass } from "./CharClass";
+import { DEFAULT_ASSET_CLASSES } from "@/lib/constants";
 
 interface AssetClassFormProps {
   assetClasses: AssetClass[];
@@ -12,190 +14,168 @@ interface AssetClassFormProps {
 }
 
 export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
-  const [classes, setClasses] = useState<AssetClass[]>(assetClasses);
-  const [name, setName] = useState("");
-  const [percentage, setPercentage] = useState("");
-  const [error, setError] = useState("");
+  const [classes, setClasses] = useState<(AssetClass & { color: string })[]>(
+    []
+  );
   const router = useRouter();
+  const onSaveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const oldPercentages = useRef<Record<string, number>>({});
+  const hasSetClasses = useRef(false);
 
   useEffect(() => {
-    setClasses(assetClasses);
+    if (!assetClasses.length) return;
+    if (hasSetClasses.current) return;
+
+    setClasses(
+      assetClasses.map((assetClass) => ({
+        ...assetClass,
+        color:
+          DEFAULT_ASSET_CLASSES.find((cls) => cls.id === assetClass.id)
+            ?.color || "#000000",
+      }))
+    );
+
+    hasSetClasses.current = true;
   }, [assetClasses]);
+
+  useEffect(() => {
+    if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
+
+    onSaveTimeout.current = setTimeout(() => {
+      onSave(classes);
+    }, 1000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classes]);
 
   const totalPercentage = classes.reduce((sum, cls) => sum + cls.percentage, 0);
 
-  const handleAddClass = () => {
-    if (!name.trim()) {
-      setError("Nome da classe de ativos é obrigatório");
-      return;
-    }
+  const handleUpdateClass = useCallback(
+    (id: string, percentage: number) => {
+      const oldPercentage = oldPercentages.current[id] || 0;
+      const isIncreasing = percentage > oldPercentage;
 
-    const parsedPercentage = parseFloat(percentage);
-    if (isNaN(parsedPercentage) || parsedPercentage <= 0) {
-      setError("Percentual precisa ser um número positivo");
-      return;
-    }
+      const totalPercentageIgnoringCurrentClass = classes.reduce(
+        (sum, cls) => sum + (cls.id === id ? 0 : cls.percentage),
+        0
+      );
 
-    if (totalPercentage + parsedPercentage > 100) {
-      setError("Total de percentuais não pode exceder 100%");
-      return;
-    }
-
-    const newClass: AssetClass = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      percentage: parsedPercentage,
-    };
-
-    const updatedClasses = [...classes, newClass];
-    setClasses(updatedClasses);
-
-    setName("");
-    setPercentage("");
-    setError("");
-
-    onSave(updatedClasses);
-  };
-
-  const handleRemoveClass = (id: string) => {
-    const updatedClasses = classes.filter((cls) => cls.id !== id);
-    setClasses(updatedClasses);
-    onSave(updatedClasses);
-  };
-
-  const handleUpdateClass = (
-    id: string,
-    field: keyof AssetClass,
-    value: string
-  ) => {
-    const updatedClasses = classes.map((cls) => {
-      if (cls.id === id) {
-        if (field === "name") {
-          return { ...cls, name: value };
-        } else if (field === "percentage") {
-          const parsedValue = parseFloat(value);
-          if (!isNaN(parsedValue)) {
-            return { ...cls, percentage: parsedValue };
-          }
-        }
+      if (
+        totalPercentageIgnoringCurrentClass + percentage > 100 &&
+        isIncreasing
+      ) {
+        return;
       }
-      return cls;
-    });
 
-    setClasses(updatedClasses);
-    onSave(updatedClasses);
-  };
+      setClasses((prevClasses) => {
+        const classExists = prevClasses.find((cls) => cls.id === id);
+
+        let newClasses = [...prevClasses];
+
+        if (!classExists) {
+          newClasses.push({
+            id,
+            name:
+              DEFAULT_ASSET_CLASSES.find((cls) => cls.id === id)?.name || "",
+            percentage,
+            color:
+              DEFAULT_ASSET_CLASSES.find((cls) => cls.id === id)?.color ||
+              "#000000",
+          });
+        } else {
+          newClasses = newClasses.map((cls) => {
+            if (cls.id === id) {
+              return { ...cls, percentage };
+            }
+
+            return cls;
+          });
+        }
+
+        return newClasses;
+      });
+
+      oldPercentages.current[id] = percentage;
+    },
+    [classes]
+  );
+
+  useEffect(() => {
+    setClasses(DEFAULT_ASSET_CLASSES);
+  }, []);
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <CharClass
+          assetClasses={[
+            ...classes,
+            {
+              id: "13",
+              name: "Não alocado",
+              percentage: 100 - totalPercentage,
+              color: "#808080",
+            },
+          ]}
+          totalPercentage={totalPercentage}
+        />
 
-        <p className="text-sm">
-          Total alocado:{" "}
-          <span
-            className={
-              totalPercentage > 100 ? "text-red-500 font-bold" : "font-bold"
-            }
-          >
-            {totalPercentage}%
-          </span>
-          {totalPercentage > 100 && " (excede 100%)"}
-          {totalPercentage < 100 &&
-            totalPercentage > 0 &&
-            ` (falta ${100 - totalPercentage}%)`}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4 mb-6">
-          {classes.map((cls) => (
-            <div
-              className="flex items-center space-x-2 p-3 bg-muted rounded-md"
-              key={cls.id}
-            >
-              <div className="flex-1 space-y-1">
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_100px] gap-x-6 gap-y-4 items-center">
-                  <div className="flex flex-col space-y-1">
-                    <Label htmlFor={`name-${cls.id}`}>Nome</Label>
-                    <Input
-                      id={`name-${cls.id}`}
-                      value={cls.name}
-                      onChange={(e) =>
-                        handleUpdateClass(cls.id, "name", e.target.value)
-                      }
-                      className="w-full"
-                      placeholder="Nome da classe"
-                    />
-                  </div>
+        <div className="space-y-4 my-6">
+          {DEFAULT_ASSET_CLASSES.map((cls) => {
+            const classPercentage = classes.find(
+              (c) => c.id === cls.id
+            )?.percentage;
 
-                  <div className="flex flex-col space-y-1">
-                    <Label htmlFor={`percentage-${cls.id}`}>
-                      Percentual (%)
-                    </Label>
+            const percentage =
+              classPercentage === undefined ? cls.percentage : classPercentage;
+
+            return (
+              <div
+                className="flex flex-col gap-4 p-3 bg-muted rounded-md"
+                key={cls.id}
+              >
+                <div className="flex justify-between">
+                  <p>{cls.name}</p>
+
+                  <div className="flex items-center gap-1">
                     <Input
-                      id={`percentage-${cls.id}`}
                       type="number"
-                      value={cls.percentage}
+                      value={percentage}
                       onChange={(e) =>
-                        handleUpdateClass(cls.id, "percentage", e.target.value)
+                        handleUpdateClass(cls.id, Number(e.target.value))
                       }
-                      className="w-full"
-                      placeholder="%"
+                      className="w-16"
                     />
+                    <p>%</p>
                   </div>
                 </div>
-
-                <div className="flex justify-start mt-4">
-                  <Button
-                    id={`remove-${cls.id}`}
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleRemoveClass(cls.id)}
-                    className="w-28"
-                  >
-                    Remover
-                  </Button>
-                </div>
+                <Slider
+                  value={[percentage]}
+                  onValueChange={(value) => handleUpdateClass(cls.id, value[0])}
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                  trackClassName="bg-gray-400"
+                  rangeColor={cls.color}
+                />
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
 
-        <div className="flex flex-col space-y-4">
-          <div>
-            <Label htmlFor="className">Nome da Classe</Label>
-            <Input
-              id="className"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Ações Nacionais"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="percentage">Percentual (%)</Label>
-            <Input
-              id="percentage"
-              type="number"
-              value={percentage}
-              onChange={(e) => setPercentage(e.target.value)}
-              placeholder="Ex: 25"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Button onClick={handleAddClass} className="w-full max-w-48">
-              Adicionar Classe
-            </Button>
-
-            {classes.length > 0 && (
+          <div className="flex gap-2 justify-end">
+            {classes.length > 0 && totalPercentage === 100 && (
               <Button
                 variant="outline"
-                className="w-full max-w-48"
+                className="w-full md:max-w-48"
                 onClick={() => router.push("#assets")}
               >
                 Próximo
               </Button>
+            )}
+            {totalPercentage !== 100 && (
+              <p className="text-sm text-red-500">
+                Total de percentuais deve ser 100%
+              </p>
             )}
           </div>
         </div>
