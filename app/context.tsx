@@ -72,7 +72,7 @@ export const GlobalContextProvider = ({
   const { mutateAsync: saveWalletDataMutation } = useSaveWalletData(code);
 
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>(
-    Object.fromEntries(Object.values(STEPS).map((step) => [step, false]))
+    Object.fromEntries(Object.values(STEPS).map((step) => [step, true]))
   );
 
   const calculateSteps = useCallback(
