@@ -70,17 +70,19 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     setError("");
 
     try {
+      const cleanTicker = isTesouroDireto
+        ? tesouroType
+        : ticker.toUpperCase().trim();
+
       let { price, minInvestment } = { price: 0, minInvestment: 0.01 };
 
       if (!isTesouroDireto) {
-        ({ price, minInvestment } = await fetchAssetPrice(
-          ticker.toUpperCase()
-        ));
+        ({ price, minInvestment } = await fetchAssetPrice(cleanTicker));
       }
 
       const newAsset: Asset = {
         id: Date.now().toString(),
-        ticker: isTesouroDireto ? tesouroType : ticker.toUpperCase().trim(),
+        ticker: cleanTicker,
         classId,
         quantity: parsedQuantity,
         price,
