@@ -40,11 +40,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
     });
   }, [assetClasses]);
 
-  useEffect(() => {
-    onSave(classes);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classes]);
-
   const totalPercentage = classes.reduce((sum, cls) => sum + cls.percentage, 0);
 
   const handleUpdateClass = useCallback(
@@ -89,20 +84,23 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
           });
         }
 
+        onSave(newClasses);
         return newClasses;
       });
 
       oldPercentages.current[id] = percentage;
     },
-    [classes]
+    [classes, onSave]
   );
 
   useEffect(() => {
     setClasses((prev) => {
       if (prev.length > 0) return prev;
+
+      onSave(DEFAULT_ASSET_CLASSES);
       return DEFAULT_ASSET_CLASSES;
     });
-  }, []);
+  }, [onSave]);
 
   return (
     <Card className="w-full">

@@ -5,11 +5,14 @@ import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { toast, Toaster } from "sonner";
+import { GlobalContextProvider } from "./context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
-      <QueryClientProvider>{children}</QueryClientProvider>
+      <QueryClientProvider>
+        <GlobalContextProvider>{children}</GlobalContextProvider>
+      </QueryClientProvider>
       <Toaster richColors closeButton />
     </Suspense>
   );

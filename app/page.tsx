@@ -134,6 +134,7 @@ export default function Home() {
         (sum, asset) => sum + asset.price * asset.quantity,
         0
       );
+
       setTotalInvestment(total);
     }
   }, [assets]);
@@ -144,58 +145,44 @@ export default function Home() {
       .padStart(6, "0");
   }
 
-  const handleSave = useCallback(
-    ({
-      newAssetClasses,
-      newAssets,
-      newContributionAmount,
-      newInvestments,
-    }: {
-      newAssetClasses: AssetClass[];
-      newAssets: Asset[];
-      newContributionAmount: number;
-      newInvestments: Investment[];
-    }) => {
-      if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
-
-      onSaveTimeout.current = setTimeout(() => {
-        let newCode = code;
-
-        if (newCode === "") {
-          newCode = generateCode();
-          setCode(newCode);
-        }
-
-        setAssetClasses(newAssetClasses);
-        setAssets(newAssets);
-        setContributionAmount(newContributionAmount);
-        setInvestments(newInvestments);
-
-        const newData = {
-          assetClasses: newAssetClasses,
-          assets: newAssets,
-          contributionAmount: newContributionAmount,
-          investments: newInvestments,
-        };
-
-        const currentDataStr = JSON.stringify(data);
-        const dataString = JSON.stringify(newData);
-
-        if (currentDataStr === dataString) return;
-        saveWalletDataMutation(dataString);
-      }, 1000);
-    },
-    [code, saveWalletDataMutation, data]
-  );
-
   useEffect(() => {
-    handleSave({
-      newAssetClasses: assetClasses,
-      newAssets: assets,
-      newContributionAmount: contributionAmount,
-      newInvestments: investments,
+    console.log("Saving data:", {
+      assetClasses,
     });
-  }, [assetClasses, assets, contributionAmount, handleSave, investments]);
+
+    if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
+
+    onSaveTimeout.current = setTimeout(() => {
+      let newCode = code;
+
+      if (newCode === "") {
+        newCode = generateCode();
+        setCode(newCode);
+      }
+
+      const newData = {
+        assetClasses,
+        assets,
+        contributionAmount,
+        investments,
+      };
+
+      const currentDataStr = JSON.stringify(data);
+      const dataString = JSON.stringify(newData);
+
+      if (currentDataStr === dataString) return;
+
+      saveWalletDataMutation(dataString);
+    }, 1000);
+  }, [
+    assetClasses,
+    assets,
+    code,
+    contributionAmount,
+    data,
+    investments,
+    saveWalletDataMutation,
+  ]);
 
   const handleSaveAssetClasses = (newAssetClasses: AssetClass[]) => {
     setAssetClasses(newAssetClasses);
