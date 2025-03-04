@@ -26,6 +26,15 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.1.2
         version: 1.1.2(@types/react@19.0.10)(react@19.0.0)
+      '@tanstack/query-sync-storage-persister':
+        specifier: ^5.67.1
+        version: 5.67.1
+      '@tanstack/react-query':
+        specifier: ^5.67.1
+        version: 5.67.1(react@19.0.0)
+      '@tanstack/react-query-persist-client':
+        specifier: ^5.67.1
+        version: 5.67.1(@tanstack/react-query@5.67.1(react@19.0.0))(react@19.0.0)
       axios:
         specifier: ^1.8.1
         version: 1.8.1
@@ -41,6 +50,12 @@ importers:
       next:
         specifier: 15.2.0
         version: 15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      next-nprogress-bar:
+        specifier: ^2.4.7
+        version: 2.4.7
+      next-themes:
+        specifier: ^0.4.4
+        version: 0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -50,15 +65,15 @@ importers:
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
-      react-hot-toast:
-        specifier: ^2.5.2
-        version: 2.5.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       recharts:
         specifier: ^2.15.1
         version: 2.15.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       redis:
         specifier: ^4.7.0
         version: 4.7.0
+      sonner:
+        specifier: ^2.0.1
+        version: 2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.0.2
@@ -717,6 +732,26 @@ packages:
   '@tailwindcss/postcss@4.0.9':
     resolution: {integrity: sha512-BT/E+pdMqulavEAVM5NCpxmGEwHiLDPpkmg/c/X25ZBW+izTe+aZ+v1gf/HXTrihRoCxrUp5U4YyHsBTzspQKQ==}
 
+  '@tanstack/query-core@5.67.1':
+    resolution: {integrity: sha512-AkFmuukVejyqVIjEQoFhLb3q+xHl7JG8G9cANWTMe3s8iKzD9j1VBSYXgCjy6vm6xM8cUCR9zP2yqWxY9pTWOA==}
+
+  '@tanstack/query-persist-client-core@5.67.1':
+    resolution: {integrity: sha512-dRyX0U1rsMn5p85fF71VPbAGHVlhdU7cjt35GCQlCqKYpxmanpXq2JohtXEWonYNPrhVSPI5okvUbljggpRPhA==}
+
+  '@tanstack/query-sync-storage-persister@5.67.1':
+    resolution: {integrity: sha512-ejMwbiGM5U0fM5ZswPSkOxBVU5IXQAH6TAzz6riysCq3gEJ980xUFmvH1w2u/TttFRhO6DmNpvgsD451nmQmZw==}
+
+  '@tanstack/react-query-persist-client@5.67.1':
+    resolution: {integrity: sha512-tDmgrAPPRD4nUuBoMpPbSpMgo9hfIjtv8KvMsnECqkN049UVPIHsU7KS70rO8cNtXdsFLzorzq8gbinwUhZ3Gw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.67.1
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.67.1':
+    resolution: {integrity: sha512-fH5u4JLwB6A+wLFdi8wWBWAYoJV5deYif2OveJ26ktAWjU499uvVFS1wPWnyEyq5LvZX1MZInvv9QRaIZANRaQ==}
+    peerDependencies:
+      react: ^18 || ^19
+
   '@types/d3-array@3.2.1':
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
 
@@ -1374,11 +1409,6 @@ packages:
     resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
     engines: {node: '>= 0.4'}
 
-  goober@2.1.16:
-    resolution: {integrity: sha512-erjk19y1U33+XAMe1VTvIONHYoSqE4iS7BYUZfHaqeohLmnC0FdxEh7rQU+6MZ4OajItzjZFSRtVANrQwNq6/g==}
-    peerDependencies:
-      csstype: ^3.0.10
-
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
@@ -1714,6 +1744,15 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
+  next-nprogress-bar@2.4.7:
+    resolution: {integrity: sha512-OeveNQYFBhQhZ+RgrDnvHNUEQfHCmipymmD4AfAVE9pFV4jeWi7/nNK5f0lIk7ODRrtjyyr/n2YpkRbs5kUoMg==}
+
+  next-themes@0.4.4:
+    resolution: {integrity: sha512-LDQ2qIOJF0VnuVrrMSMLrWGjRMkq+0mpgl6e0juCLqdJ+oo8Q84JRWT6Wh11VDQKkMMe+dVzDKLWs5n87T+PkQ==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
   next@15.2.0:
     resolution: {integrity: sha512-VaiM7sZYX8KIAHBrRGSFytKknkrexNfGb8GlG6e93JqueCspuGte8i4ybn8z4ww1x3f2uzY4YpTaBEW4/hvsoQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
@@ -1734,6 +1773,9 @@ packages:
         optional: true
       sass:
         optional: true
+
+  nprogress-v2@1.1.10:
+    resolution: {integrity: sha512-MypWLNIPIM07SS0bAc/oac0vhVFz9vAHm7d1sj//Pnf3J03LQ3CuWrlDteIu6exq0fIvkDJ6tUDRWLaifsIt5w==}
 
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -1853,13 +1895,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
-
-  react-hot-toast@2.5.2:
-    resolution: {integrity: sha512-Tun3BbCxzmXXM7C+NI4qiv6lT0uwGh4oAfeJyNOjYUejTsm35mK9iCaYLGv8cBz9L5YxZLx/2ii7zsIwPtPUdw==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16'
-      react-dom: '>=16'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -2026,6 +2061,12 @@ packages:
 
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
+
+  sonner@2.0.1:
+    resolution: {integrity: sha512-FRBphaehZ5tLdLcQ8g2WOIRE+Y7BCfWi5Zyd8bCvBjiW8TxxAyoWZIxS661Yz6TGPqFQ4VLzOF89WEYhfynSFQ==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -2741,6 +2782,28 @@ snapshots:
       lightningcss: 1.29.1
       postcss: 8.5.3
       tailwindcss: 4.0.9
+
+  '@tanstack/query-core@5.67.1': {}
+
+  '@tanstack/query-persist-client-core@5.67.1':
+    dependencies:
+      '@tanstack/query-core': 5.67.1
+
+  '@tanstack/query-sync-storage-persister@5.67.1':
+    dependencies:
+      '@tanstack/query-core': 5.67.1
+      '@tanstack/query-persist-client-core': 5.67.1
+
+  '@tanstack/react-query-persist-client@5.67.1(@tanstack/react-query@5.67.1(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.67.1
+      '@tanstack/react-query': 5.67.1(react@19.0.0)
+      react: 19.0.0
+
+  '@tanstack/react-query@5.67.1(react@19.0.0)':
+    dependencies:
+      '@tanstack/query-core': 5.67.1
+      react: 19.0.0
 
   '@types/d3-array@3.2.1': {}
 
@@ -3595,10 +3658,6 @@ snapshots:
       define-properties: 1.2.1
       gopd: 1.2.0
 
-  goober@2.1.16(csstype@3.1.3):
-    dependencies:
-      csstype: 3.1.3
-
   gopd@1.2.0: {}
 
   graceful-fs@4.2.11: {}
@@ -3901,6 +3960,15 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
+  next-nprogress-bar@2.4.7:
+    dependencies:
+      nprogress-v2: 1.1.10
+
+  next-themes@0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   next@15.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@next/env': 15.2.0
@@ -3925,6 +3993,8 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  nprogress-v2@1.1.10: {}
 
   object-assign@4.1.1: {}
 
@@ -4044,13 +4114,6 @@ snapshots:
   react-hook-form@7.54.2(react@19.0.0):
     dependencies:
       react: 19.0.0
-
-  react-hot-toast@2.5.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      csstype: 3.1.3
-      goober: 2.1.16(csstype@3.1.3)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
 
   react-is@16.13.1: {}
 
@@ -4284,6 +4347,11 @@ snapshots:
     dependencies:
       is-arrayish: 0.3.2
     optional: true
+
+  sonner@2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   source-map-js@1.2.1: {}
 

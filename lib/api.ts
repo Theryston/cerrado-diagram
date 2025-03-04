@@ -1,5 +1,3 @@
-import toast from "react-hot-toast";
-
 export const fetchAssetPrice = async (ticker: string) => {
   try {
     const response = await fetch(`/api/quote?ticker=${ticker}`);
@@ -9,17 +7,18 @@ export const fetchAssetPrice = async (ticker: string) => {
     }
 
     const data = await response.json();
+
     return data;
-  } catch (error) {
-    console.error("Error fetching asset price:", error);
-    toast.error(
-      `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`
-    );
+  } catch {
     return { price: 0, minInvestment: getMinInvestment(ticker) };
   }
 };
 
 export const saveWalletData = async (code: string, data: string) => {
+  if (!code || !data) {
+    return;
+  }
+
   const response = await fetch(`/api/wallet`, {
     method: "POST",
     body: JSON.stringify({ code, data }),

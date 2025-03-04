@@ -7,22 +7,12 @@ import { ContributionForm } from "@/components/ContributionForm";
 import { InvestmentResults } from "@/components/InvestmentResults";
 import { Timeline, TimelineStep } from "@/components/Timeline";
 import { AssetClass, Asset, Investment } from "@/lib/types";
-import {
-  initializeData,
-  updateAssetClasses,
-  updateAssets,
-  updateContributionAmount,
-  updateInvestments,
-  updateTotalInvestment,
-} from "@/lib/storage";
 import { calculateInvestmentDistribution } from "@/lib/calculator";
-import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Article } from "@/components/Article";
 import { Header } from "@/components/Header";
-import { saveWalletData } from "@/lib/api";
 import { STEPS } from "@/lib/constants";
+import { useSaveWalletData, useWalletData } from "@/lib/hooks";
 
 export default function Home() {
   const [assetClasses, setAssetClasses] = useState<AssetClass[]>([]);
@@ -37,6 +27,8 @@ export default function Home() {
       ? localStorage.getItem("cerrado-diagram-code") || ""
       : ""
   );
+  const { mutateAsync: saveWalletDataMutation } = useSaveWalletData(code);
+  const { data } = useWalletData(code);
   const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>(
     {
       [STEPS.ASSET_CLASSES]: false,
@@ -50,15 +42,6 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("cerrado-diagram-code", code);
   }, [code]);
-
-  function deleteAllData() {
-    localStorage.removeItem("cerrado-diagram-data");
-    localStorage.removeItem("cerrado-diagram-code");
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 200);
-  }
 
   const calculateSteps = useCallback(
     ({
@@ -117,8 +100,7 @@ export default function Home() {
     []
   );
 
-  const loadData = useCallback(() => {
-    const data = initializeData();
+  useEffect(() => {
     console.log("Loaded data:", data);
 
     if (data) {
@@ -136,18 +118,7 @@ export default function Home() {
       setInvestments(investmentsFromStorage);
       setTotalInvestment(data.totalInvestment || 0);
     }
-  }, []);
-
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        loadData();
-      }
-    } catch (error) {
-      console.error("Error loading data from localStorage:", error);
-      toast.error("Erro ao carregar dados salvos");
-    }
-  }, [loadData]);
+  }, [data]);
 
   useEffect(() => {
     calculateSteps({
@@ -164,7 +135,6 @@ export default function Home() {
         0
       );
       setTotalInvestment(total);
-      updateTotalInvestment(total);
     }
   }, [assets]);
 
@@ -174,58 +144,61 @@ export default function Home() {
       .padStart(6, "0");
   }
 
-  function handleSave({
-    newAssetClasses,
-    newAssets,
-    newContributionAmount,
-    newInvestments,
-  }: {
-    newAssetClasses: AssetClass[];
-    newAssets: Asset[];
-    newContributionAmount: number;
-    newInvestments: Investment[];
-  }) {
-    if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
-
-    onSaveTimeout.current = setTimeout(() => {
-      let newCode = code;
-
-      if (newCode === "") {
-        newCode = generateCode();
-        setCode(newCode);
-      }
-
-      setAssetClasses(newAssetClasses);
-      setAssets(newAssets);
-      setContributionAmount(newContributionAmount);
-      setInvestments(newInvestments);
-
-      updateAssetClasses(newAssetClasses);
-      updateAssets(newAssets);
-      updateContributionAmount(newContributionAmount);
-      updateInvestments(newInvestments);
-
-      const data = {
-        assetClasses: newAssetClasses,
-        assets: newAssets,
-        contributionAmount: newContributionAmount,
-        investments: newInvestments,
-      };
-
-      const dataString = JSON.stringify(data);
-
-      saveWalletData(newCode, dataString);
-    }, 1000);
-  }
-
-  const handleSaveAssetClasses = (newAssetClasses: AssetClass[]) => {
-    setAssetClasses(newAssetClasses);
-    handleSave({
+  const handleSave = useCallback(
+    ({
       newAssetClasses,
+      newAssets,
+      newContributionAmount,
+      newInvestments,
+    }: {
+      newAssetClasses: AssetClass[];
+      newAssets: Asset[];
+      newContributionAmount: number;
+      newInvestments: Investment[];
+    }) => {
+      if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
+
+      onSaveTimeout.current = setTimeout(() => {
+        let newCode = code;
+
+        if (newCode === "") {
+          newCode = generateCode();
+          setCode(newCode);
+        }
+
+        setAssetClasses(newAssetClasses);
+        setAssets(newAssets);
+        setContributionAmount(newContributionAmount);
+        setInvestments(newInvestments);
+
+        const newData = {
+          assetClasses: newAssetClasses,
+          assets: newAssets,
+          contributionAmount: newContributionAmount,
+          investments: newInvestments,
+        };
+
+        const currentDataStr = JSON.stringify(data);
+        const dataString = JSON.stringify(newData);
+
+        if (currentDataStr === dataString) return;
+        saveWalletDataMutation(dataString);
+      }, 1000);
+    },
+    [code, saveWalletDataMutation, data]
+  );
+
+  useEffect(() => {
+    handleSave({
+      newAssetClasses: assetClasses,
       newAssets: assets,
       newContributionAmount: contributionAmount,
       newInvestments: investments,
     });
+  }, [assetClasses, assets, contributionAmount, handleSave, investments]);
+
+  const handleSaveAssetClasses = (newAssetClasses: AssetClass[]) => {
+    setAssetClasses(newAssetClasses);
 
     const totalPercentage = newAssetClasses.reduce(
       (sum, cls) => sum + cls.percentage,
@@ -242,12 +215,6 @@ export default function Home() {
 
   const handleSaveAssets = (newAssets: Asset[]) => {
     setAssets(newAssets);
-    handleSave({
-      newAssetClasses: assetClasses,
-      newAssets: newAssets,
-      newContributionAmount: contributionAmount,
-      newInvestments: investments,
-    });
 
     if (newAssets.length > 0) {
       setCompletedSteps((prev) => ({ ...prev, [STEPS.ASSETS]: true }));
@@ -259,12 +226,6 @@ export default function Home() {
 
   const handleSaveContribution = (amount: number) => {
     setContributionAmount(amount);
-    handleSave({
-      newAssetClasses: assetClasses,
-      newAssets: assets,
-      newContributionAmount: amount,
-      newInvestments: investments,
-    });
 
     if (amount > 0) {
       setCompletedSteps((prev) => ({ ...prev, [STEPS.CONTRIBUTION]: true }));
@@ -277,13 +238,6 @@ export default function Home() {
       );
 
       setInvestments(calculatedInvestments);
-      handleSave({
-        newAssetClasses: assetClasses,
-        newAssets: assets,
-        newContributionAmount: amount,
-        newInvestments: calculatedInvestments,
-      });
-
       setCurrentStep(STEPS.RESULTS);
     } else {
       setCompletedSteps((prev) => ({ ...prev, [STEPS.CONTRIBUTION]: false }));
@@ -298,7 +252,6 @@ export default function Home() {
       [STEPS.RESULTS]: false,
     }));
     setContributionAmount(0);
-    updateContributionAmount(0);
     router.push("#contribution");
   };
 
@@ -397,35 +350,6 @@ export default function Home() {
         </div>
 
         <Timeline steps={timelineSteps} currentStep={currentStep} />
-
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: "#363636",
-              color: "#fff",
-            },
-            success: {
-              duration: 5000,
-              iconTheme: {
-                primary: "#10B981",
-                secondary: "white",
-              },
-            },
-            error: {
-              duration: 5000,
-              iconTheme: {
-                primary: "#EF4444",
-                secondary: "white",
-              },
-            },
-          }}
-        />
-
-        <Button variant="destructive" onClick={deleteAllData} className="mt-4">
-          Limpar tudo
-        </Button>
 
         <div className="mt-4 text-sm text-muted-foreground">
           <p>

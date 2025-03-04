@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Asset, AssetClass } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fetchAssetPrice } from "@/lib/api";
 import { getIdealPercentage } from "@/lib/calculator";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -12,7 +11,8 @@ import {
   DEFAULT_ASSET_CLASSES_IDS,
   DEFAULT_TESOURO_TYPES,
 } from "@/lib/constants";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+import { useAssetPrice } from "@/lib/hooks";
 
 interface AssetFormProps {
   assets: Asset[];
@@ -21,15 +21,32 @@ interface AssetFormProps {
 }
 
 export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
-  const [currentAssets, setCurrentAssets] = useState<Asset[]>(assets);
+  const [currentAssets, setCurrentAssets] = useState<Asset[]>([]);
   const [ticker, setTicker] = useState("");
+  const [tickerValue, setTickerValue] = useState("");
   const [quantity, setQuantity] = useState("");
   const [classId, setClassId] = useState("");
   const [score, setScore] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [tesouroType, setTesouroType] = useState<string>("selic");
+  const [isTesouroDireto, setIsTesouroDireto] = useState(false);
   const router = useRouter();
+  const setTickerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { data: assetPrice } = useAssetPrice(ticker, isTesouroDireto);
+
+  useEffect(() => {
+    if (setTickerTimeoutRef.current) clearTimeout(setTickerTimeoutRef.current);
+
+    setTickerTimeoutRef.current = setTimeout(() => {
+      setTicker(tickerValue);
+    }, 500);
+  }, [tickerValue]);
+
+  useEffect(() => {
+    setIsTesouroDireto(classId === DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO);
+  }, [classId]);
 
   useEffect(() => {
     setCurrentAssets(assets);
@@ -77,7 +94,13 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       let { price, minInvestment } = { price: 0, minInvestment: 0.01 };
 
       if (!isTesouroDireto) {
-        ({ price, minInvestment } = await fetchAssetPrice(cleanTicker));
+        ({ price, minInvestment } = assetPrice);
+
+        if (!price) {
+          toast.error(
+            `Erro ao buscar preço do ativo ${ticker}! Insira o valor manualmente.`
+          );
+        }
       }
 
       const newAsset: Asset = {
@@ -98,6 +121,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       setCurrentAssets(updatedAssets);
 
       setTicker("");
+      setTickerValue("");
       setTesouroType("selic");
       setQuantity("");
       setClassId("");
@@ -372,8 +396,8 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
             <Label htmlFor="ticker">Ticker</Label>
             <Input
               id="ticker"
-              value={ticker}
-              onChange={(e) => setTicker(e.target.value)}
+              value={tickerValue}
+              onChange={(e) => setTickerValue(e.target.value)}
               placeholder="Ex: PETR4 (Petrobras), LFTS11 (Tesouro Selic)..."
             />
           </div>

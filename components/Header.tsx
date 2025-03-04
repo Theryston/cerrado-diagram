@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, RefreshCcw } from "lucide-react";
+import { Download } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -10,8 +10,8 @@ import { Dialog } from "./ui/dialog";
 import { DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { useCallback, useState, useEffect } from "react";
-import toast from "react-hot-toast";
-import { getWalletData } from "@/lib/api";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type HeaderProps = {
   code: string;
@@ -21,6 +21,8 @@ type HeaderProps = {
 export function Header({ code, setCode }: HeaderProps) {
   const [codeValue, setCodeValue] = useState(code);
   const [isImporting, setIsImporting] = useState(false);
+  const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setCodeValue(code);
@@ -39,20 +41,15 @@ export function Header({ code, setCode }: HeaderProps) {
     setIsImporting(true);
 
     try {
-      const response = await getWalletData(codeValue);
-
-      const responseStr = JSON.stringify(response);
-
-      localStorage.setItem("cerrado-diagram-data", responseStr);
       localStorage.setItem("cerrado-diagram-code", codeValue);
-
-      window.location.reload();
+      await queryClient.invalidateQueries({ queryKey: ["walletData"] });
+      setIsOpen(false);
     } catch {
       toast.error("Erro ao importar dados");
     } finally {
       setIsImporting(false);
     }
-  }, [codeValue, code, setCode]);
+  }, [codeValue, code, setCode, queryClient]);
 
   return (
     <header className="flex items-center justify-between mb-4 border-b border-gray-200 p-4">
@@ -65,16 +62,7 @@ export function Header({ code, setCode }: HeaderProps) {
       </Link>
 
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="cursor-pointer"
-          onClick={() => handleImport()}
-          title="Sincronizar carteira"
-        >
-          <RefreshCcw className="w-4 h-4" />
-        </Button>
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
               variant="outline"

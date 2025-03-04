@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
 import { GoogleTagManager } from "@next/third-parties/google";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,7 +26,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GMT_ID || ""} />
 
-      <body className={clsx(inter.className, "antialiased")}>{children}</body>
+      <body className={clsx(inter.className, "antialiased")}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

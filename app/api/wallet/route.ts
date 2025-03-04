@@ -1,3 +1,4 @@
+import { CerradoDiagram } from "@/lib/types";
 import { createClient } from "redis";
 
 const client = createClient({
@@ -26,10 +27,18 @@ export async function GET(request: Request) {
     return Response.json({ error: "Code is required" }, { status: 400 });
   }
 
-  const data = await client.get(`cerrado-diagram-data-${code}`);
+  const data: string | null = await client.get(`cerrado-diagram-data-${code}`);
+
+  const initialData: CerradoDiagram = {
+    assetClasses: [],
+    assets: [],
+    investments: [],
+    totalInvestment: 0,
+    contributionAmount: 0,
+  };
 
   if (!data) {
-    return Response.json({ error: "Data not found" }, { status: 404 });
+    return Response.json(initialData);
   }
 
   return Response.json(JSON.parse(data));

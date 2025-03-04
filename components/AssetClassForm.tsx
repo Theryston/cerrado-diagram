@@ -19,23 +19,25 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   );
   const router = useRouter();
   const oldPercentages = useRef<Record<string, number>>({});
-  const hasSetClasses = useRef(false);
 
   useEffect(() => {
-    if (!assetClasses.length) return;
-    if (hasSetClasses.current) return;
-    console.log("assetClasses", assetClasses);
+    setClasses((prev) => {
+      const isSame = assetClasses.every((cls) =>
+        prev.some(
+          (prevCls) =>
+            prevCls.id === cls.id && prevCls.percentage === cls.percentage
+        )
+      );
 
-    setClasses(
-      assetClasses.map((assetClass) => ({
+      if (isSame) return prev;
+
+      return assetClasses.map((assetClass) => ({
         ...assetClass,
         color:
           DEFAULT_ASSET_CLASSES.find((cls) => cls.id === assetClass.id)
             ?.color || "#000000",
-      }))
-    );
-
-    hasSetClasses.current = true;
+      }));
+    });
   }, [assetClasses]);
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
         totalPercentageIgnoringCurrentClass + percentage > 100 &&
         isIncreasing
       ) {
-        return;
+        percentage = 100 - totalPercentageIgnoringCurrentClass;
       }
 
       setClasses((prevClasses) => {
