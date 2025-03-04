@@ -18,7 +18,6 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
     []
   );
   const router = useRouter();
-  const onSaveTimeout = useRef<NodeJS.Timeout | null>(null);
   const oldPercentages = useRef<Record<string, number>>({});
   const hasSetClasses = useRef(false);
 
@@ -39,11 +38,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   }, [assetClasses]);
 
   useEffect(() => {
-    if (onSaveTimeout.current) clearTimeout(onSaveTimeout.current);
-
-    onSaveTimeout.current = setTimeout(() => {
-      onSave(classes);
-    }, 1000);
+    onSave(classes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classes]);
 

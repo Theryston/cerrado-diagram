@@ -19,6 +19,29 @@ export const fetchAssetPrice = async (ticker: string) => {
   }
 };
 
+export const saveWalletData = async (code: string, data: string) => {
+  const response = await fetch(`/api/wallet`, {
+    method: "POST",
+    body: JSON.stringify({ code, data }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to save wallet data");
+  }
+
+  return response.json();
+};
+
+export const getWalletData = async (code: string) => {
+  const response = await fetch(`/api/wallet?code=${code}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to get wallet data");
+  }
+
+  return response.json();
+};
+
 export function getMinInvestment(ticker: string): number {
   const cleanTicker = ticker.split(".")[0];
 

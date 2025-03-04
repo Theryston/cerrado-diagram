@@ -17,19 +17,19 @@ export const DEFAULT_ASSET_CLASSES = [
   {
     id: DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO,
     name: "Tesouro Direto",
-    percentage: 50,
+    percentage: 0,
     color: "#1E90FF",
   },
   {
     id: DEFAULT_ASSET_CLASSES_IDS.FIIS,
     name: "FIIs",
-    percentage: 30,
+    percentage: 0,
     color: "#32CD32",
   },
   {
     id: DEFAULT_ASSET_CLASSES_IDS.ACAO,
     name: "Ações",
-    percentage: 10,
+    percentage: 0,
     color: "#FF4500",
   },
   {
