@@ -2,6 +2,7 @@ export interface AssetClass {
   id: string;
   name: string;
   percentage: number;
+  color?: string;
 }
 
 export interface Asset {

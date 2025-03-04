@@ -12,7 +12,7 @@ import {
 import { AssetClass } from "@/lib/types";
 
 type CharClassProps = {
-  assetClasses: (AssetClass & { color: string })[];
+  assetClasses: AssetClass[];
   totalPercentage: number;
 };
 

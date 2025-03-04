@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { AssetClass } from "@/lib/types";
+import React, { useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
@@ -7,47 +6,24 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "./ui/input";
 import { CharClass } from "./CharClass";
 import { DEFAULT_ASSET_CLASSES } from "@/lib/constants";
+import { useGlobal } from "@/app/context";
 
-interface AssetClassFormProps {
-  assetClasses: AssetClass[];
-  onSave: (assetClasses: AssetClass[]) => void;
-}
-
-export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
-  const [classes, setClasses] = useState<(AssetClass & { color: string })[]>(
-    []
-  );
+export function AssetClassForm() {
+  const { assetClasses, setAssetClasses } = useGlobal();
   const router = useRouter();
   const oldPercentages = useRef<Record<string, number>>({});
 
-  useEffect(() => {
-    setClasses((prev) => {
-      const isSame = assetClasses.every((cls) =>
-        prev.some(
-          (prevCls) =>
-            prevCls.id === cls.id && prevCls.percentage === cls.percentage
-        )
-      );
-
-      if (isSame) return prev;
-
-      return assetClasses.map((assetClass) => ({
-        ...assetClass,
-        color:
-          DEFAULT_ASSET_CLASSES.find((cls) => cls.id === assetClass.id)
-            ?.color || "#000000",
-      }));
-    });
-  }, [assetClasses]);
-
-  const totalPercentage = classes.reduce((sum, cls) => sum + cls.percentage, 0);
+  const totalPercentage = assetClasses.reduce(
+    (sum, cls) => sum + cls.percentage,
+    0
+  );
 
   const handleUpdateClass = useCallback(
     (id: string, percentage: number) => {
       const oldPercentage = oldPercentages.current[id] || 0;
       const isIncreasing = percentage > oldPercentage;
 
-      const totalPercentageIgnoringCurrentClass = classes.reduce(
+      const totalPercentageIgnoringCurrentClass = assetClasses.reduce(
         (sum, cls) => sum + (cls.id === id ? 0 : cls.percentage),
         0
       );
@@ -59,7 +35,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
         percentage = 100 - totalPercentageIgnoringCurrentClass;
       }
 
-      setClasses((prevClasses) => {
+      setAssetClasses((prevClasses) => {
         const classExists = prevClasses.find((cls) => cls.id === id);
 
         let newClasses = [...prevClasses];
@@ -84,30 +60,20 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
           });
         }
 
-        onSave(newClasses);
         return newClasses;
       });
 
       oldPercentages.current[id] = percentage;
     },
-    [classes, onSave]
+    [assetClasses, setAssetClasses]
   );
-
-  useEffect(() => {
-    setClasses((prev) => {
-      if (prev.length > 0) return prev;
-
-      onSave(DEFAULT_ASSET_CLASSES);
-      return DEFAULT_ASSET_CLASSES;
-    });
-  }, [onSave]);
 
   return (
     <Card className="w-full">
       <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <CharClass
           assetClasses={[
-            ...classes,
+            ...assetClasses,
             {
               id: "13",
               name: "Não alocado",
@@ -120,7 +86,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
 
         <div className="space-y-4 my-6">
           {DEFAULT_ASSET_CLASSES.map((cls) => {
-            const classPercentage = classes.find(
+            const classPercentage = assetClasses.find(
               (c) => c.id === cls.id
             )?.percentage;
 
@@ -162,7 +128,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
           })}
 
           <div className="flex gap-2 justify-end">
-            {classes.length > 0 && totalPercentage === 100 && (
+            {assetClasses.length > 0 && totalPercentage === 100 && (
               <Button
                 variant="outline"
                 className="w-full md:max-w-48"

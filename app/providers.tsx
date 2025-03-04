@@ -13,7 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider>
         <GlobalContextProvider>{children}</GlobalContextProvider>
       </QueryClientProvider>
-      <Toaster richColors closeButton />
+      <Toaster richColors closeButton position="top-center" />
     </Suspense>
   );
 }

@@ -1,28 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Investment, Asset, AssetClass } from "@/lib/types";
+import { Investment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGlobal } from "@/app/context";
 
-interface InvestmentResultsProps {
-  investments: Investment[];
-  assets: Asset[];
-  assetClasses: AssetClass[];
-  onReset: () => void;
-}
-
-export function InvestmentResults({
-  investments,
-  assets,
-  assetClasses,
-  onReset,
-}: InvestmentResultsProps) {
-  const [actualInvestments, setActualInvestments] =
-    useState<Investment[]>(investments);
-
-  // Update local state when props change
-  useEffect(() => {
-    setActualInvestments(investments);
-  }, [investments]);
+export function InvestmentResults() {
+  const { investments, assets, assetClasses, onReset } = useGlobal();
 
   const getAsset = (assetId: string) => {
     return assets.find((asset) => asset.id === assetId);
@@ -32,19 +14,19 @@ export function InvestmentResults({
     return assetClasses.find((cls) => cls.id === classId);
   };
 
-  // Group investments by asset class
-  const investmentsByClass = actualInvestments.reduce<
-    Record<string, Investment[]>
-  >((acc, inv) => {
-    if (!acc[inv.classId]) {
-      acc[inv.classId] = [];
-    }
-    acc[inv.classId].push(inv);
-    return acc;
-  }, {});
+  const investmentsByClass = investments.reduce<Record<string, Investment[]>>(
+    (acc, inv) => {
+      if (!acc[inv.classId]) {
+        acc[inv.classId] = [];
+      }
+      acc[inv.classId].push(inv);
+      return acc;
+    },
+    {}
+  );
 
-  const hasInvestments = actualInvestments.some((inv) => inv.suggested > 0);
-  const totalInvestment = actualInvestments.reduce(
+  const hasInvestments = investments.some((inv) => inv.suggested > 0);
+  const totalInvestment = investments.reduce(
     (acc, inv) => acc + inv.suggested,
     0
   );
@@ -53,10 +35,21 @@ export function InvestmentResults({
     <Card className="w-full">
       <CardContent className="mt-6">
         {!hasInvestments ? (
-          <p>
-            Nenhum investimento sugerido. Verifique seus ativos e tente
-            novamente.
-          </p>
+          <div className="space-y-2 text-muted-foreground text-sm">
+            <p>
+              <b>Nenhum investimento sugerido.</b> Verifique seus ativos e tente
+              novamente.
+            </p>
+            <p>Isso geralmente acontece pelos seguintes motivos:</p>
+            <ul className="list-disc list-inside">
+              <li>Você não possui ativos cadastrados.</li>
+              <li>Você esqueceu de adicionar o valor do seu ativo.</li>
+              <li>
+                O valor do aporte que você escolheu é menor que o valor do seu
+                ativo mais barato.
+              </li>
+            </ul>
+          </div>
         ) : (
           <div className="space-y-4">
             {Object.entries(investmentsByClass).map(

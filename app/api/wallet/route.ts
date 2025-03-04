@@ -1,3 +1,4 @@
+import { DEFAULT_ASSET_CLASSES } from "@/lib/constants";
 import { CerradoDiagram } from "@/lib/types";
 import { createClient } from "redis";
 
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
   const data: string | null = await client.get(`cerrado-diagram-data-${code}`);
 
   const initialData: CerradoDiagram = {
-    assetClasses: [],
+    assetClasses: DEFAULT_ASSET_CLASSES,
     assets: [],
     investments: [],
     totalInvestment: 0,

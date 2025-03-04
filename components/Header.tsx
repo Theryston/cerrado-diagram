@@ -12,13 +12,10 @@ import { Input } from "./ui/input";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useGlobal } from "@/app/context";
 
-type HeaderProps = {
-  code: string;
-  setCode: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export function Header({ code, setCode }: HeaderProps) {
+export function Header() {
+  const { code, setCode } = useGlobal();
   const [codeValue, setCodeValue] = useState(code);
   const [isImporting, setIsImporting] = useState(false);
   const queryClient = useQueryClient();

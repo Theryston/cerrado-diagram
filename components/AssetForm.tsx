@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Asset, AssetClass } from "@/lib/types";
+import { Asset } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,15 +13,10 @@ import {
 } from "@/lib/constants";
 import { toast } from "sonner";
 import { useAssetPrice } from "@/lib/hooks";
+import { useGlobal } from "@/app/context";
 
-interface AssetFormProps {
-  assets: Asset[];
-  assetClasses: AssetClass[];
-  onSave: (assets: Asset[]) => void;
-}
-
-export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
-  const [currentAssets, setCurrentAssets] = useState<Asset[]>([]);
+export function AssetForm() {
+  const { assetClasses, assets, setAssets } = useGlobal();
   const [ticker, setTicker] = useState("");
   const [tickerValue, setTickerValue] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -48,10 +43,6 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     setIsTesouroDireto(classId === DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO);
   }, [classId]);
 
-  useEffect(() => {
-    setCurrentAssets(assets);
-  }, [assets]);
-
   const handleAddAsset = async () => {
     const isTesouroDireto =
       classId === DEFAULT_ASSET_CLASSES_IDS.TESOURO_DIRETO;
@@ -72,7 +63,8 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     }
 
     const parsedQuantity = parseFloat(quantity);
-    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+
+    if (isNaN(parsedQuantity) || parsedQuantity < 0) {
       setError("Quantidade precisa ser um número positivo");
       return;
     }
@@ -117,8 +109,8 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
         toast.error("Insira o preço do tesouro direto manualmente");
       }
 
-      const updatedAssets = [...currentAssets, newAsset];
-      setCurrentAssets(updatedAssets);
+      const updatedAssets = [...assets, newAsset];
+      setAssets(updatedAssets);
 
       setTicker("");
       setTickerValue("");
@@ -126,8 +118,6 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       setQuantity("");
       setClassId("");
       setScore("");
-
-      onSave(updatedAssets);
     } catch (err) {
       setError(
         "Erro ao buscar informações do ativo. Verifique o ticker e tente novamente."
@@ -139,13 +129,12 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
   };
 
   const handleRemoveAsset = (id: string) => {
-    const updatedAssets = currentAssets.filter((asset) => asset.id !== id);
-    setCurrentAssets(updatedAssets);
-    onSave(updatedAssets);
+    const updatedAssets = assets.filter((asset) => asset.id !== id);
+    setAssets(updatedAssets);
   };
 
   const handleUpdateAsset = (id: string, field: keyof Asset, value: string) => {
-    const updatedAssets = currentAssets.map((asset) => {
+    const updatedAssets = assets.map((asset) => {
       if (asset.id === id) {
         if (field === "ticker") {
           return { ...asset, ticker: value.toUpperCase() };
@@ -176,8 +165,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
       return asset;
     });
 
-    setCurrentAssets(updatedAssets);
-    onSave(updatedAssets);
+    setAssets(updatedAssets);
   };
 
   const getAssetClassName = (classId: string) => {
@@ -185,8 +173,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     return assetClass ? assetClass.name : "Desconhecido";
   };
 
-  // Group assets by class
-  const assetsByClass = currentAssets.reduce<
+  const assetsByClass = assets.reduce<
     Record<string, (Asset & { idealPercentage: number })[]>
   >((acc, asset) => {
     const classId = asset.classId;
@@ -197,7 +184,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     const assetClass = assetClasses.find((cls) => cls.id === classId);
     if (!assetClass) return acc;
 
-    const assetsInClass = currentAssets.filter((a) => a.classId === classId);
+    const assetsInClass = assets.filter((a) => a.classId === classId);
 
     const idealPercentage = getIdealPercentage(
       asset,
@@ -209,7 +196,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
     return acc;
   }, {});
 
-  const totalInvestment = currentAssets.reduce(
+  const totalInvestment = assets.reduce(
     (acc, asset) => acc + asset.price * asset.quantity,
     0
   );
@@ -220,8 +207,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <p className="text-sm">
-          Total de ativos:{" "}
-          <span className="font-bold">{currentAssets.length}</span>
+          Total de ativos: <span className="font-bold">{assets.length}</span>
         </p>
       </CardHeader>
       <CardContent>
