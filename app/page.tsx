@@ -60,6 +60,63 @@ export default function Home() {
     }, 200);
   }
 
+  const calculateSteps = useCallback(
+    ({
+      assetClassesFromStorage,
+      assetsFromStorage,
+      contributionAmount,
+    }: {
+      assetClassesFromStorage: AssetClass[];
+      assetsFromStorage: Asset[];
+      contributionAmount: number;
+    }) => {
+      let newCurrentStep = STEPS.ASSET_CLASSES;
+
+      setCompletedSteps((prev) => {
+        const updatedSteps = { ...prev };
+
+        const totalClassPercentage = assetClassesFromStorage.reduce(
+          (sum, cls) => sum + cls.percentage,
+          0
+        );
+
+        if (
+          assetClassesFromStorage.length > 0 &&
+          totalClassPercentage === 100
+        ) {
+          updatedSteps[STEPS.ASSET_CLASSES] = true;
+
+          if (newCurrentStep === STEPS.ASSET_CLASSES) {
+            newCurrentStep = STEPS.ASSETS;
+          }
+        }
+
+        if (assetsFromStorage.length > 0) {
+          updatedSteps[STEPS.ASSETS] = true;
+
+          if (newCurrentStep === STEPS.ASSETS) {
+            newCurrentStep = STEPS.CONTRIBUTION;
+          }
+        }
+
+        if (contributionAmount > 0) {
+          updatedSteps[STEPS.CONTRIBUTION] = true;
+
+          if (newCurrentStep === STEPS.CONTRIBUTION) {
+            newCurrentStep = STEPS.RESULTS;
+          }
+        }
+
+        return updatedSteps;
+      });
+
+      setTimeout(() => {
+        setCurrentStep(newCurrentStep);
+      }, 200);
+    },
+    []
+  );
+
   const loadData = useCallback(() => {
     const data = initializeData();
     console.log("Loaded data:", data);
@@ -78,41 +135,6 @@ export default function Home() {
       setContributionAmount(data.contributionAmount || 0);
       setInvestments(investmentsFromStorage);
       setTotalInvestment(data.totalInvestment || 0);
-
-      let newCurrentStep = STEPS.ASSET_CLASSES;
-
-      setCompletedSteps((prev) => {
-        const updatedSteps = { ...prev };
-
-        if (assetClassesFromStorage.length > 0) {
-          updatedSteps[STEPS.ASSET_CLASSES] = true;
-
-          if (newCurrentStep === STEPS.ASSET_CLASSES) {
-            newCurrentStep = STEPS.ASSETS;
-          }
-        }
-
-        if (assetsFromStorage.length > 0) {
-          updatedSteps[STEPS.ASSETS] = true;
-          if (newCurrentStep === STEPS.ASSETS) {
-            newCurrentStep = STEPS.CONTRIBUTION;
-          }
-        }
-
-        if (data.contributionAmount > 0) {
-          updatedSteps[STEPS.CONTRIBUTION] = true;
-
-          if (newCurrentStep === STEPS.CONTRIBUTION) {
-            newCurrentStep = STEPS.RESULTS;
-          }
-        }
-
-        return updatedSteps;
-      });
-
-      setTimeout(() => {
-        setCurrentStep(newCurrentStep);
-      }, 200);
     }
   }, []);
 
@@ -126,6 +148,14 @@ export default function Home() {
       toast.error("Erro ao carregar dados salvos");
     }
   }, [loadData]);
+
+  useEffect(() => {
+    calculateSteps({
+      assetClassesFromStorage: assetClasses,
+      assetsFromStorage: assets,
+      contributionAmount: contributionAmount,
+    });
+  }, [assetClasses, assets, contributionAmount, calculateSteps]);
 
   useEffect(() => {
     if (assets.length > 0) {
@@ -197,7 +227,12 @@ export default function Home() {
       newInvestments: investments,
     });
 
-    if (newAssetClasses.length > 0) {
+    const totalPercentage = newAssetClasses.reduce(
+      (sum, cls) => sum + cls.percentage,
+      0
+    );
+
+    if (newAssetClasses.length > 0 && totalPercentage === 100) {
       setCompletedSteps((prev) => ({ ...prev, [STEPS.ASSET_CLASSES]: true }));
       setCurrentStep(STEPS.ASSETS);
     } else {

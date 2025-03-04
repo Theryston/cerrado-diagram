@@ -49,8 +49,15 @@ export function Timeline({ steps, currentStep }: TimelineProps) {
           stepClass = "step-inactive";
         }
 
-        const isDisabled = !step.isComplete && !isActive && !isPrevious;
-        const isClickable = step.isComplete || isActive || isPrevious;
+        const anyPreviousStepIncomplete = steps
+          .slice(0, index)
+          .some((s) => !s.isComplete);
+        const isDisabled =
+          (!step.isComplete && !isActive && !isPrevious) ||
+          (index > 0 && anyPreviousStepIncomplete);
+        const isClickable =
+          (step.isComplete || isActive || isPrevious) &&
+          !anyPreviousStepIncomplete;
 
         return (
           <div key={step.id} className="timeline-item">
