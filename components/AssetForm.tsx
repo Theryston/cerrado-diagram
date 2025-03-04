@@ -383,7 +383,7 @@ export function AssetForm() {
               id="ticker"
               value={tickerValue}
               onChange={(e) => setTickerValue(e.target.value)}
-              placeholder="Ex: PETR4 (Petrobras), LFTS11 (Tesouro Selic)..."
+              placeholder="Ex: PETR4"
             />
           </div>
 
