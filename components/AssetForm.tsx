@@ -80,7 +80,7 @@ export function AssetForm({ assets, assetClasses, onSave }: AssetFormProps) {
 
       const newAsset: Asset = {
         id: Date.now().toString(),
-        ticker: isTesouroDireto ? tesouroType : ticker.toUpperCase(),
+        ticker: isTesouroDireto ? tesouroType : ticker.toUpperCase().trim(),
         classId,
         quantity: parsedQuantity,
         price,
