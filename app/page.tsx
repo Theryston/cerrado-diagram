@@ -22,13 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Article } from "@/components/Article";
 import { Header } from "@/components/Header";
 import { saveWalletData } from "@/lib/api";
-
-const STEPS = {
-  ASSET_CLASSES: "asset-classes",
-  ASSETS: "assets",
-  CONTRIBUTION: "contribution",
-  RESULTS: "results",
-};
+import { STEPS } from "@/lib/constants";
 
 export default function Home() {
   const [assetClasses, setAssetClasses] = useState<AssetClass[]>([]);

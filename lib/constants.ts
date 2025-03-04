@@ -98,3 +98,12 @@ export const DEFAULT_TESOURO_TYPES = [
     name: "Prefixado",
   },
 ];
+
+export const STEPS = {
+  ASSET_CLASSES: "asset-classes",
+  ASSETS: "assets",
+  CONTRIBUTION: "contribution",
+  RESULTS: "results",
+};
+
+export const WALLET_SETUP_STEPS = [STEPS.ASSET_CLASSES, STEPS.ASSETS];

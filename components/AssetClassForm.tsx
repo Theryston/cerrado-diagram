@@ -24,6 +24,7 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   useEffect(() => {
     if (!assetClasses.length) return;
     if (hasSetClasses.current) return;
+    console.log("assetClasses", assetClasses);
 
     setClasses(
       assetClasses.map((assetClass) => ({
@@ -95,7 +96,10 @@ export function AssetClassForm({ assetClasses, onSave }: AssetClassFormProps) {
   );
 
   useEffect(() => {
-    setClasses(DEFAULT_ASSET_CLASSES);
+    setClasses((prev) => {
+      if (prev.length > 0) return prev;
+      return DEFAULT_ASSET_CLASSES;
+    });
   }, []);
 
   return (
