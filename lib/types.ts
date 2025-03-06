@@ -32,3 +32,18 @@ export interface CerradoDiagram {
   contributionAmount: number;
   expandedSteps: Record<string, boolean>;
 }
+
+export interface ChecklistItem {
+  label: string;
+  description: string;
+  points: number;
+}
+
+export interface ChecklistClass {
+  label: string;
+  items: ChecklistItem[];
+}
+
+export interface Checklist {
+  [key: string]: ChecklistClass[];
+}

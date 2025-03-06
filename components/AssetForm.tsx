@@ -8,15 +8,30 @@ import { getIdealPercentage } from "@/lib/calculator";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import {
+  CHECKLIST_ITEMS,
   DEFAULT_ASSET_CLASSES_IDS,
   DEFAULT_TESOURO_TYPES,
 } from "@/lib/constants";
 import { toast } from "sonner";
 import { useAssetPrice } from "@/lib/hooks";
 import { useGlobal } from "@/app/context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Calculator, Trash2 } from "lucide-react";
 
 export function AssetForm() {
-  const { assetClasses, assets, setAssets } = useGlobal();
+  const {
+    assetClasses,
+    assets,
+    setAssets,
+    setIsCalculationOpen,
+    setAssetToCalculate,
+    handleUpdateAsset,
+  } = useGlobal();
   const [ticker, setTicker] = useState("");
   const [tickerValue, setTickerValue] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -129,41 +144,6 @@ export function AssetForm() {
 
   const handleRemoveAsset = (id: string) => {
     const updatedAssets = assets.filter((asset) => asset.id !== id);
-    setAssets(updatedAssets);
-  };
-
-  const handleUpdateAsset = (id: string, field: keyof Asset, value: string) => {
-    const updatedAssets = assets.map((asset) => {
-      if (asset.id === id) {
-        if (field === "ticker") {
-          return { ...asset, ticker: value.toUpperCase() };
-        } else if (field === "quantity") {
-          const parsedValue = parseFloat(value);
-          if (!isNaN(parsedValue)) {
-            return { ...asset, quantity: parsedValue };
-          }
-        } else if (field === "classId") {
-          return { ...asset, classId: value };
-        } else if (field === "score") {
-          const parsedValue = parseInt(value);
-          if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
-            return { ...asset, score: parsedValue };
-          }
-        } else if (field === "price") {
-          const parsedValue = parseFloat(value);
-          if (!isNaN(parsedValue) && parsedValue > 0) {
-            return { ...asset, price: parsedValue };
-          }
-        } else if (field === "minInvestment") {
-          const parsedValue = parseFloat(value);
-          if (!isNaN(parsedValue) && parsedValue >= 0) {
-            return { ...asset, minInvestment: parsedValue };
-          }
-        }
-      }
-      return asset;
-    });
-
     setAssets(updatedAssets);
   };
 
@@ -341,14 +321,32 @@ export function AssetForm() {
                     />
                   </div>
 
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleRemoveAsset(asset.id)}
-                    className="w-full"
-                  >
-                    Remover
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" className="w-full">
+                        Mais opções
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => handleRemoveAsset(asset.id)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Remover
+                      </DropdownMenuItem>
+                      {Object.keys(CHECKLIST_ITEMS).includes(asset.classId) && (
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setIsCalculationOpen(true);
+                            setAssetToCalculate(asset);
+                          }}
+                        >
+                          <Calculator className="w-4 h-4 mr-2" />
+                          Calcular nota
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ))}
             </div>

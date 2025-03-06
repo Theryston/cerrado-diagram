@@ -36,6 +36,11 @@ type ContextType = {
     React.SetStateAction<Record<string, boolean>>
   >;
   onReset: () => void;
+  isCalculationOpen: boolean;
+  setIsCalculationOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  assetToCalculate: Asset | null;
+  setAssetToCalculate: React.Dispatch<React.SetStateAction<Asset | null>>;
+  handleUpdateAsset: (id: string, field: keyof Asset, value: string) => void;
 };
 
 export const GlobalContext = createContext<ContextType>({} as ContextType);
@@ -70,10 +75,47 @@ export const GlobalContextProvider = ({
   const router = useRouter();
   const onSaveTimeout = useRef<NodeJS.Timeout | null>(null);
   const { mutateAsync: saveWalletDataMutation } = useSaveWalletData(code);
+  const [isCalculationOpen, setIsCalculationOpen] = useState(false);
+  const [assetToCalculate, setAssetToCalculate] = useState<Asset | null>(null);
 
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>(
     Object.fromEntries(Object.values(STEPS).map((step) => [step, true]))
   );
+
+  const handleUpdateAsset = (id: string, field: keyof Asset, value: string) => {
+    const updatedAssets = assets.map((asset) => {
+      if (asset.id === id) {
+        if (field === "ticker") {
+          return { ...asset, ticker: value.toUpperCase() };
+        } else if (field === "quantity") {
+          const parsedValue = parseFloat(value);
+          if (!isNaN(parsedValue)) {
+            return { ...asset, quantity: parsedValue };
+          }
+        } else if (field === "classId") {
+          return { ...asset, classId: value };
+        } else if (field === "score") {
+          const parsedValue = parseInt(value);
+          if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
+            return { ...asset, score: parsedValue };
+          }
+        } else if (field === "price") {
+          const parsedValue = parseFloat(value);
+          if (!isNaN(parsedValue) && parsedValue > 0) {
+            return { ...asset, price: parsedValue };
+          }
+        } else if (field === "minInvestment") {
+          const parsedValue = parseFloat(value);
+          if (!isNaN(parsedValue) && parsedValue >= 0) {
+            return { ...asset, minInvestment: parsedValue };
+          }
+        }
+      }
+      return asset;
+    });
+
+    setAssets(updatedAssets);
+  };
 
   const calculateSteps = useCallback(
     ({
@@ -292,6 +334,11 @@ export const GlobalContextProvider = ({
         onReset,
         expandedSteps,
         setExpandedSteps,
+        isCalculationOpen,
+        setIsCalculationOpen,
+        assetToCalculate,
+        setAssetToCalculate,
+        handleUpdateAsset,
       }}
     >
       {children}

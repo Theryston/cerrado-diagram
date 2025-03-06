@@ -3,6 +3,7 @@
 import { Timeline } from "@/components/Timeline";
 import { Article } from "@/components/Article";
 import { Header } from "@/components/Header";
+import { ModelCalculator } from "@/components/ModelCalculator";
 
 export default function Home() {
   return (
@@ -50,6 +51,8 @@ export default function Home() {
         <div className="mt-12">
           <Article />
         </div>
+
+        <ModelCalculator />
       </main>
     </>
   );
